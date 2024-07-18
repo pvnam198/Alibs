@@ -8,4 +8,6 @@ interface IBannerHelper {
         adId: String,
         collapsible: Boolean
     )
+
+    suspend fun setBannerSettings(json: String)
 }

@@ -15,6 +15,9 @@ import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.LoadAdError
 import com.npv.ads.domain.banners.conditions.BannerCondition
 import com.npv.ads.domain.banners.repositories.IBannerAdRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class BannerHelperImpl(
     private val activity: Activity,
@@ -66,5 +69,9 @@ class BannerHelperImpl(
             AdRequest.Builder()
         }
         adView.loadAd(adRequest.build())
+    }
+
+    override suspend fun setBannerSettings(json: String) {
+        bannerAdRepository.setBannerSettings(json)
     }
 }
