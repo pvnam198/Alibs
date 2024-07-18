@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.npv.ablibs'
-version = '1.0'
+version = '1.0.1'
 
 android {
     namespace 'com.npv.ads'
@@ -53,7 +53,7 @@ afterEvaluate {
                 from components.release
                 groupId = 'com.npv.ablibs'
                 artifactId = 'ads'
-                version = '1.0'
+                version = '1.0.1'
             }
         }
     }
