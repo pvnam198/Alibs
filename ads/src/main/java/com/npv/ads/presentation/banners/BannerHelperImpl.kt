@@ -1,4 +1,4 @@
-package com.npv.ads.presentation.banners.usecases
+package com.npv.ads.presentation.banners
 
 import android.app.Activity
 import android.content.Context
@@ -16,13 +16,11 @@ import com.google.android.gms.ads.LoadAdError
 import com.npv.ads.domain.banners.conditions.IBannerCondition
 import com.npv.ads.domain.banners.repositories.IBannerAdRepository
 
-class ShowBannerAdUseCase(
-    private val activity: Activity,
+class BannerHelperImpl(
     private val bannerAdRepository: IBannerAdRepository,
     private val bannerCondition: IBannerCondition
-) : IShowBannerAdUseCase {
-
-    override suspend operator fun invoke(viewGroup: ViewGroup, adId: String) {
+) : IBannerHelper {
+    override suspend fun showBannerAd(activity: Activity, viewGroup: ViewGroup, adId: String) {
         val bannerSetting = bannerAdRepository.getBannerSetting(adId)
         val isNeedShow = bannerCondition.shouldShow() && bannerSetting?.show == true
         if (!isNeedShow) {
@@ -66,4 +64,7 @@ class ShowBannerAdUseCase(
         adView.loadAd(adRequest.build())
     }
 
+    override suspend fun setBannerSettings(json: String) {
+        bannerAdRepository.setBannerSettings(json)
+    }
 }
