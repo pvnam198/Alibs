@@ -1,4 +1,4 @@
-package com.npv.ads.presentation.banners.helpers
+package com.npv.ads.presentation.banners.usecases
 
 import android.app.Activity
 import android.content.Context
@@ -13,24 +13,18 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.LoadAdError
-import com.npv.ads.domain.banners.conditions.BannerCondition
+import com.npv.ads.domain.banners.conditions.IBannerCondition
 import com.npv.ads.domain.banners.repositories.IBannerAdRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
-class BannerHelperImpl(
+class ShowBannerAdUseCase(
     private val activity: Activity,
     private val bannerAdRepository: IBannerAdRepository,
-    private val bannerCondition: BannerCondition
-) : IBannerHelper {
-    override suspend fun showIfNeedElseHide(
-        viewGroup: ViewGroup,
-        adId: String,
-        collapsible: Boolean
-    ) {
+    private val bannerCondition: IBannerCondition
+) : IShowBannerAdUseCase {
+
+    override suspend operator fun invoke(viewGroup: ViewGroup, adId: String) {
         val bannerSetting = bannerAdRepository.getBannerSetting(adId)
-        val isNeedShow = bannerCondition.isNeedShow() && bannerSetting?.show == true
+        val isNeedShow = bannerCondition.shouldShow() && bannerSetting?.show == true
         if (!isNeedShow) {
             viewGroup.visibility = View.GONE
             return
@@ -61,6 +55,7 @@ class BannerHelperImpl(
         viewGroup.addView(adView)
         adView.adUnitId = adId
         adView.setAdSize(adSize)
+        val collapsible = bannerSetting?.collapsible == true
         val adRequest = if (collapsible) {
             val extras = Bundle()
             extras.putString("collapsible", "bottom")
@@ -71,7 +66,4 @@ class BannerHelperImpl(
         adView.loadAd(adRequest.build())
     }
 
-    override suspend fun setBannerSettings(json: String) {
-        bannerAdRepository.setBannerSettings(json)
-    }
 }
