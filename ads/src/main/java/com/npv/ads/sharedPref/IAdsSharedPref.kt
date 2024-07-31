@@ -22,7 +22,7 @@ interface IAdsSharedPref {
 
     suspend fun setNativeSettings(json: String)
 
-    fun getNativePreloadMax(): Int
+    suspend fun getNativePreloadMax(): Int
 
     suspend fun setNativePreloadMax(max: Int)
 

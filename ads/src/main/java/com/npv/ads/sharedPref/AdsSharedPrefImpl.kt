@@ -37,8 +37,13 @@ class AdsSharedPrefImpl(context: Context) : IAdsSharedPref {
         }
     }
 
-    override fun getNativePreloadMax(): Int {
-        return sharedPref.getInt(IAdsSharedPref.NATIVE_PRELOAD_MAX, DEFAULT_NATIVE_PRELOAD_MAX)
+    override suspend fun getNativePreloadMax(): Int {
+        return withContext(Dispatchers.IO) {
+            sharedPref.getInt(
+                IAdsSharedPref.NATIVE_PRELOAD_MAX,
+                DEFAULT_NATIVE_PRELOAD_MAX
+            )
+        }
     }
 
     override suspend fun setNativePreloadMax(max: Int) {

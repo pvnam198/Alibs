@@ -43,6 +43,7 @@ dependencies {
     androidTestImplementation libs.androidx.espresso.core
     implementation libs.gson
     implementation libs.play.services.ads
+    implementation libs.adjust.android
 }
 
 afterEvaluate {

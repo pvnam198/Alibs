@@ -5,8 +5,10 @@ import com.npv.ads.banners.models.BannerSetting
 
 interface IBannerAdRepository {
 
-    suspend fun getBannerSetting(id: String): BannerSetting?
+    fun loadConfig()
 
-    suspend fun setBannerSettings(json: String)
+    fun getBannerSetting(id: String): BannerSetting?
+
+    fun setBannerSettings(json: String)
 
 }

@@ -3,7 +3,9 @@ package com.npv.ads.banners.repositories
 import com.google.gson.Gson
 import com.npv.ads.banners.models.BannerSetting
 import com.npv.ads.sharedPref.IAdsSharedPref
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class BannerAdRepositoryImpl(
@@ -13,16 +15,22 @@ class BannerAdRepositoryImpl(
 
     private val bannerSettings = HashMap<String, BannerSetting>()
 
-    override suspend fun getBannerSetting(id: String): BannerSetting? {
-        return withContext(Dispatchers.Main) {
-            bannerSettings[id] ?: defaultBannerSettings?.get(id)
+    override fun loadConfig() {
+        CoroutineScope(Dispatchers.Main).launch {
+            collectBannerSettings(adsSharedPref.getBannerSettings())
         }
     }
 
-    override suspend fun setBannerSettings(json: String) {
-        if (json.isEmpty()) return
-        adsSharedPref.setBannerSettings(json)
-        collectBannerSettings(json)
+    override fun getBannerSetting(id: String): BannerSetting? {
+        return bannerSettings[id] ?: defaultBannerSettings?.get(id)
+    }
+
+    override fun setBannerSettings(json: String) {
+        CoroutineScope(Dispatchers.Main).launch {
+            if (json.isEmpty()) return@launch
+            adsSharedPref.setBannerSettings(json)
+            collectBannerSettings(json)
+        }
     }
 
     private suspend fun collectBannerSettings(json: String) {

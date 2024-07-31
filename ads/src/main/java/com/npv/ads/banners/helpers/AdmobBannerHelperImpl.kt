@@ -1,6 +1,5 @@
 package com.npv.ads.banners.helpers
 
-import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.util.DisplayMetrics
@@ -15,11 +14,13 @@ import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.LoadAdError
 import com.npv.ads.banners.conditions.IBannerCondition
 import com.npv.ads.banners.repositories.IBannerAdRepository
+import com.npv.ads.revenue_tracker.IRevenueTracker
 
 class AdmobBannerHelperImpl(
-    private val activity: Activity,
+    private val context: Context,
     private val bannerAdRepository: IBannerAdRepository,
-    private val bannerCondition: IBannerCondition
+    private val bannerCondition: IBannerCondition,
+    private val revenueTracker: IRevenueTracker<AdView>? = null
 ) : IBannerHelper {
     override suspend fun showOrHideIfNeed(
         viewGroup: ViewGroup,
@@ -33,7 +34,7 @@ class AdmobBannerHelperImpl(
             return
         }
         viewGroup.visibility = View.VISIBLE
-        val windowManager = activity.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val display = windowManager.defaultDisplay
         val outMetrics = DisplayMetrics()
         display.getMetrics(outMetrics)
@@ -43,8 +44,9 @@ class AdmobBannerHelperImpl(
             adWidthPixels = outMetrics.widthPixels.toFloat()
         }
         val adWidth = (adWidthPixels / density).toInt()
-        val adSize = AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(activity, adWidth)
-        val adView = AdView(activity)
+        val adSize = AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(context, adWidth)
+        val adView = AdView(context)
+        revenueTracker?.trackAdRevenue(adView)
         adView.adListener = object : AdListener() {
             override fun onAdLoaded() {
                 super.onAdLoaded()

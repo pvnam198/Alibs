@@ -1,4 +1,5 @@
 [versions]
+adjustAndroid = "4.38.5"
 agp = "8.5.1"
 error_prone_annotations = "2.27.0"
 gson = "2.11.0"
@@ -14,6 +15,7 @@ constraintlayout = "2.1.4"
 playServicesAds = "23.2.0"
 
 [libraries]
+adjust-android = { module = "com.adjust.sdk:adjust-android", version.ref = "adjustAndroid" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 error_prone_annotations = { module = "com.google.errorprone:error_prone_annotations", version.ref = "error_prone_annotations" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
