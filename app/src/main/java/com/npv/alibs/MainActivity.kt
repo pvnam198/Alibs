@@ -1,21 +1,62 @@
 package com.npv.alibs
 
 import android.os.Bundle
-import android.util.Log
+import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
-import com.npv.ads.data.natives.repositories.AdMobNativeAdRepository
-import com.npv.ads.data.shared.AdsSharedPrefImpl
-import com.npv.ads.domain.natives.conditions.INativeAdConditions
-import com.npv.ads.domain.natives.listeners.NativeAdLoadingCompletedListener
+import com.google.android.gms.ads.nativead.NativeAd
+import com.npv.ads.natives.conditions.INativeAdConditions
+import com.npv.ads.natives.helpers.AdmobNativeHelperImpl
+import com.npv.ads.natives.helpers.INativeAdHelper
+import com.npv.ads.natives.listeners.NativeAdChangedListener
+import com.npv.ads.natives.repositories.AdmobNativeAdRepository
+import com.npv.ads.natives.repositories.INativeAdRepository
+import com.npv.ads.sharedPref.AdsSharedPrefImpl
+import com.npv.alibs.nativetemplates.TemplateView
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
-    private var nativeAdLoadingCompletedListener: NativeAdLoadingCompletedListener? = null
+    private lateinit var templateView: TemplateView
+    private lateinit var btnLoadNativeAd: View
+    private var isBind = false
+    private val nativeAdRepository: INativeAdRepository<NativeAd> by lazy {
+        AdmobNativeAdRepository(
+            context = this,
+            nativeAdConditions = object : INativeAdConditions {
+                override fun shouldLoad(): Boolean {
+                    return true
+                }
+
+            },
+            adsSharedPref = AdsSharedPrefImpl(this)
+        )
+    }
+
+    private val nativeAdChangedListener = object : NativeAdChangedListener {
+        override fun onNativeChanged() {
+            lifecycleScope.launch {
+                if (isBind) return@launch
+                val nativeAd = nativeAdRepository.getNativeAd()
+                if (nativeAd != null) {
+                    isBind = true
+                    templateView.visibility = View.VISIBLE
+                    templateView.setNativeAd(nativeAd)
+                    loadNativeAd()
+                } else {
+                    templateView.visibility = View.GONE
+                }
+            }
+        }
+    }
+
+    private val nativeHelper: INativeAdHelper<NativeAd> by lazy {
+        val nativeHelper = AdmobNativeHelperImpl(nativeAdRepository = nativeAdRepository)
+        nativeHelper
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,32 +67,26 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        loadNatives()
-    }
+        templateView = findViewById(R.id.template_view)
+        btnLoadNativeAd = findViewById(R.id.btn_load_native)
 
-    private fun loadNatives() {
-        val nativeAdRepository = AdMobNativeAdRepository(
-            context = this,
-            nativeAdConditions = object : INativeAdConditions {
-                override fun shouldLoad(): Boolean {
-                    return true
-                }
-
-            },
-            adsSharedPref = AdsSharedPrefImpl(this)
-        )
-        lifecycleScope.launch {
-            nativeAdRepository.loadIfNeed("ca-app-pub-3940256099942544/2247696110")
-            val nativeAdLoadingCompletedListener = object : NativeAdLoadingCompletedListener {
-                override fun onNativeAdLoadingCompleted() {
-                    lifecycleScope.launch {
-                        val nativeAd = nativeAdRepository.getNativeAd()
-                        Log.d("log_debugs", "MainActivity_onNativeAdLoadingCompleted: $nativeAd")
-                    }
-                }
-            }
-            this@MainActivity.nativeAdLoadingCompletedListener = nativeAdLoadingCompletedListener
-            nativeAdRepository.addNativeAdLoadingCompletedListener(nativeAdLoadingCompletedListener)
+        btnLoadNativeAd.setOnClickListener {
+            loadNativeAd()
         }
     }
+
+    private fun loadNativeAd() {
+        nativeAdRepository.loadIfNeed("ca-app-pub-3940256099942544/2247696110")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        nativeHelper.addListener(nativeAdChangedListener)
+    }
+
+    override fun onPause() {
+        nativeHelper.removeListener(nativeAdChangedListener)
+        super.onPause()
+    }
+
 }
