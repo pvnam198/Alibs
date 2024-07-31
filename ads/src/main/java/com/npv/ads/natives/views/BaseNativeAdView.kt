@@ -8,7 +8,13 @@ abstract class BaseNativeAdView<T>(
 
     private var isBind = false
 
-    override fun bind(): Boolean {
+    override fun bind(nativeDisplaySettingId: String?): Boolean {
+        val nativeDisplaySetting = if (nativeDisplaySettingId == null) null
+        else repository.getNativeDisplaySetting(nativeDisplaySettingId)
+        val shouldDisplay = nativeDisplaySetting == null || nativeDisplaySetting.show
+        if (!shouldDisplay) {
+            return false
+        }
         if (isBind) return true
         repository.getNativeAd()?.let {
             isBind = true

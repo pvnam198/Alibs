@@ -1,7 +1,9 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.hilt.android)
     id 'maven-publish'
+    id 'kotlin-kapt'
 }
 
 group = 'com.npv.ablibs'
@@ -44,6 +46,8 @@ dependencies {
     implementation libs.gson
     implementation libs.play.services.ads
     implementation libs.adjust.android
+    implementation libs.hilt.android
+    kapt libs.hilt.compiler
 }
 
 afterEvaluate {

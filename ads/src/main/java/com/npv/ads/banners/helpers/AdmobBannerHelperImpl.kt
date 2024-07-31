@@ -25,9 +25,11 @@ class AdmobBannerHelperImpl(
     override suspend fun showOrHideIfNeed(
         viewGroup: ViewGroup,
         adId: String,
-        bannerSettingId: String
+        bannerSettingId: String?
     ) {
-        val bannerSetting = bannerAdRepository.getBannerSetting(bannerSettingId)
+        val bannerSetting =
+            if (bannerSettingId == null) null
+            else bannerAdRepository.getBannerSetting(bannerSettingId)
         val shouldShow = bannerCondition.shouldLoad() && bannerSetting?.show == true
         if (!shouldShow) {
             viewGroup.visibility = View.GONE

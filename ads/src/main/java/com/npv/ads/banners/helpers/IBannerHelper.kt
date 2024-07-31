@@ -7,7 +7,7 @@ interface IBannerHelper {
     suspend fun showOrHideIfNeed(
         viewGroup: ViewGroup,
         adId: String,
-        bannerSettingId: String
+        bannerSettingId: String?= null
     )
 
     suspend fun setBannerSettings(json: String)
