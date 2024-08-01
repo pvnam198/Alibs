@@ -7,20 +7,20 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.nativead.NativeAd
 import com.npv.ads.natives.conditions.INativeAdConditions
-import com.npv.ads.natives.models.NativeDisplaySetting
+import com.npv.ads.natives.provider.IDefaultNativeSettingsProvider
 import com.npv.ads.revenue_tracker.IRevenueTracker
 import com.npv.ads.sharedPref.IAdsSharedPref
 
-class AdmobNativeAdRepository(
+class AdmobNativeAdRepositoryImpl(
     private val context: Context,
     nativeAdConditions: INativeAdConditions,
     adsSharedPref: IAdsSharedPref,
-    defaultNativeDisplaySettings: Map<String, NativeDisplaySetting>? = null,
-    revenueTracker: IRevenueTracker<NativeAd>? = null
+    defaultSettingProvider: IDefaultNativeSettingsProvider,
+    revenueTracker: IRevenueTracker<NativeAd>
 ) : BaseNativeAdRepository<NativeAd>(
     nativeAdConditions,
     adsSharedPref,
-    defaultNativeDisplaySettings,
+    defaultSettingProvider,
     revenueTracker
 ) {
     override fun load(id: String, preloadMax: Int) {

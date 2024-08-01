@@ -9,6 +9,7 @@ import com.npv.ads.natives.conditions.INativeAdConditions
 import com.npv.ads.natives.listeners.NativeAdChangedListener
 import com.npv.ads.natives.models.NativeDisplaySetting
 import com.npv.ads.natives.models.NativeSetting
+import com.npv.ads.natives.provider.IDefaultNativeSettingsProvider
 import com.npv.ads.revenue_tracker.IRevenueTracker
 import com.npv.ads.sharedPref.IAdsSharedPref
 import kotlinx.coroutines.CoroutineScope
@@ -18,8 +19,8 @@ import kotlinx.coroutines.launch
 abstract class BaseNativeAdRepository<T>(
     private val nativeAdConditions: INativeAdConditions,
     private val adsSharedPref: IAdsSharedPref,
-    private val defaultNativeDisplaySettings: Map<String, NativeDisplaySetting>? = null,
-    private val revenueTracker: IRevenueTracker<T>? = null
+    private val defaultSettingProvider: IDefaultNativeSettingsProvider,
+    private val revenueTracker: IRevenueTracker<T>
 ) : INativeAdRepository<T> {
     private val nativeDisplaySettingsMap = HashMap<String, NativeDisplaySetting>()
     private val natives = ArrayList<T>()
@@ -74,7 +75,7 @@ abstract class BaseNativeAdRepository<T>(
     }
 
     private fun trackAdRevenue(nativeAds: List<T>) {
-        nativeAds.forEach { revenueTracker?.trackAdRevenue(it) }
+        nativeAds.forEach { revenueTracker.trackAdRevenue(it) }
     }
 
     protected open fun onAdFailedToLoad(msg: String? = null) {
@@ -94,8 +95,14 @@ abstract class BaseNativeAdRepository<T>(
     }
 
     override fun loadIfNeed(id: String) {
+        if (isLoading) {
+            Log.d(TAG, "loadIfNeed: return by isLoading")
+            return
+        }
+        isLoading = true
         CoroutineScope(Dispatchers.Main).launch {
             if (!nativeAdConditions.shouldLoad()) {
+                isLoading = false
                 Log.d(TAG, "loadIfNeed: return by nativeAdConditions.shouldLoad()")
                 return@launch
             }
@@ -104,19 +111,16 @@ abstract class BaseNativeAdRepository<T>(
             val maxPreload = adsSharedPref.getNativePreloadMax()
 
             if (currentSize >= maxPreload) {
+                isLoading = false
                 Log.d(TAG, "loadIfNeed: return by maxPreload")
                 return@launch
             }
             if (isMultipleFailedToLoad()) {
+                isLoading = false
                 Log.d(TAG, "loadIfNeed: return by isMultipleFailedToLoad")
                 return@launch
             }
-            if (isLoading) {
-                Log.d(TAG, "loadIfNeed: return by isLoading")
-                return@launch
-            }
             Log.d(TAG, "loadIfNeed: load")
-            isLoading = true
             load(id, maxPreload - currentSize)
         }
     }
@@ -133,7 +137,8 @@ abstract class BaseNativeAdRepository<T>(
     }
 
     override fun getNativeDisplaySetting(id: String): NativeDisplaySetting? {
-        return this.nativeDisplaySettingsMap[id] ?: defaultNativeDisplaySettings?.get(id)
+        return this.nativeDisplaySettingsMap[id]
+            ?: defaultSettingProvider.getDefaultNativeDisplaySettings()?.get(id)
     }
 
     override fun setNativeSettings(json: String) {

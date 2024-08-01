@@ -22,6 +22,11 @@
             android:layout_height="wrap_content"
             android:text="Load Native" />
 
+        <FrameLayout
+            android:id="@+id/banner_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
     </LinearLayout>
 
 </ScrollView>

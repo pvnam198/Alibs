@@ -6,23 +6,16 @@ abstract class BaseNativeAdView<T>(
     private val repository: INativeAdRepository<T>
 ) : INativeAdView<T> {
 
-    private var isBind = false
-
-    override fun bind(nativeDisplaySettingId: String?): Boolean {
+    override fun bind(templateView: ITemplateView<T>, nativeDisplaySettingId: String?): Boolean {
         val nativeDisplaySetting = if (nativeDisplaySettingId == null) null
         else repository.getNativeDisplaySetting(nativeDisplaySettingId)
         val shouldDisplay = nativeDisplaySetting == null || nativeDisplaySetting.show
-        if (!shouldDisplay) {
-            return false
+        if (shouldDisplay) {
+            repository.getNativeAd()?.let {
+                templateView.setNativeAd(it)
+                return true
+            }
         }
-        if (isBind) return true
-        repository.getNativeAd()?.let {
-            isBind = true
-            onBind(it)
-        }
-        return isBind
+        return false
     }
-
-    abstract fun onBind(nativeAd: T)
-
 }

@@ -14,9 +14,7 @@ class AdsSharedPrefImpl(context: Context) : IAdsSharedPref {
     private val edit get() = sharedPref.edit()
 
     override suspend fun getBannerSettings(): String {
-        return withContext(Dispatchers.IO) {
-            sharedPref.getString(IAdsSharedPref.BANNER_SETTINGS, "") ?: ""
-        }
+        return sharedPref.getString(IAdsSharedPref.BANNER_SETTINGS, "") ?: ""
     }
 
     override suspend fun setBannerSettings(json: String) {

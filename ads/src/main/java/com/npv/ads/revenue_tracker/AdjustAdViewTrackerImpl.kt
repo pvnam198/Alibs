@@ -5,7 +5,7 @@ import com.adjust.sdk.AdjustAdRevenue
 import com.adjust.sdk.AdjustConfig
 import com.google.android.gms.ads.AdView
 
-class AdjustAdViewTracker : IRevenueTracker<AdView> {
+class AdjustAdViewTrackerImpl : IRevenueTracker<AdView> {
     override fun trackAdRevenue(ad: AdView) {
         ad.setOnPaidEventListener { adValue ->
             val adRevenue = AdjustAdRevenue(AdjustConfig.AD_REVENUE_ADMOB)
