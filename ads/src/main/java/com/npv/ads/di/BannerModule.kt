@@ -68,7 +68,7 @@ class BannerModule {
     @Provides
     @Singleton
     fun provideSetBannerSettingsUseCase(
-        repo: IBannerAdRepository
+        @AdmobBannerAdRepository repo: IBannerAdRepository,
     ): SetBannerSettingsUseCase {
         return SetBannerSettingsUseCase(repo)
     }

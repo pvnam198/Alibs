@@ -1,6 +1,5 @@
 package com.npv.alibs.di
 
-import com.npv.ads.banners.conditions.IBannerCondition
 import com.npv.ads.natives.conditions.INativeAdConditions
 import com.npv.ads.natives.models.NativeDisplaySetting
 import com.npv.ads.natives.provider.IDefaultNativeSettingsProvider
@@ -30,16 +29,6 @@ class NativeModule {
         return object : IDefaultNativeSettingsProvider {
             override fun getDefaultNativeDisplaySettings(): Map<String, NativeDisplaySetting> {
                 return emptyMap()
-            }
-        }
-    }
-
-    @Provides
-    @Singleton
-    fun provideBannerCondition(): IBannerCondition {
-        return object : IBannerCondition {
-            override fun shouldLoad(): Boolean {
-                return true
             }
         }
     }

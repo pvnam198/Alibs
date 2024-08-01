@@ -10,6 +10,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.gms.ads.nativead.NativeAd
 import com.npv.ads.banners.use_case.IShowBannerUseCase
+import com.npv.ads.banners.use_case.SetBannerSettingsUseCase
 import com.npv.ads.di.BannerModule.ShowBannerAdmobUseCase
 import com.npv.ads.natives.view_models.AdMobNativeAdViewModel
 import com.npv.ads.natives.view_models.INativeAdViewModel
@@ -23,6 +24,9 @@ class MainActivity : AppCompatActivity() {
     @Inject
     @ShowBannerAdmobUseCase
     lateinit var showBannerUseCase: IShowBannerUseCase
+
+    @Inject
+    lateinit var setBannerSettingsUseCase: SetBannerSettingsUseCase
 
     private val nativeViewModel: INativeAdViewModel<NativeAd> by viewModels<AdMobNativeAdViewModel>()
 
@@ -42,6 +46,8 @@ class MainActivity : AppCompatActivity() {
         templateView = findViewById(R.id.template_view)
         btnLoadNativeAd = findViewById(R.id.btn_load_native)
         bannerView = findViewById(R.id.banner_view)
+
+        setBannerSettingsUseCase.invoke("")
 
         nativeViewModel.nativeChanged.observe(this) {
             nativeViewModel.bind(templateView)
