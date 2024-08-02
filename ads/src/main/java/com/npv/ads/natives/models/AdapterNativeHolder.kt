@@ -21,6 +21,7 @@ class AdapterNativeHolder(
             context, AppModuleEntry::class.java
         ).getNativeAdViewBinder()
         if (binder.bind(adDistributor, template, nativeSettingDisplayId)) {
+            bind = true
             return template.view
         }
         return null
