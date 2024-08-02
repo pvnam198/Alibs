@@ -5,14 +5,15 @@ import com.adjust.sdk.AdjustAdRevenue
 import com.adjust.sdk.AdjustConfig
 import com.google.android.gms.ads.nativead.NativeAd
 
-class AdjustNativeAdTrackerImpl : IRevenueTracker<NativeAd> {
-    override fun trackAdRevenue(ad: NativeAd) {
-        ad.setOnPaidEventListener { adValue ->
+class NativeAdRevenueTrackerImpl : NativeAdRevenueTracker{
+    override fun trackAdRevenue(nativeAd: NativeAd) {
+        nativeAd.setOnPaidEventListener { adValue ->
             val adRevenue = AdjustAdRevenue(AdjustConfig.AD_REVENUE_ADMOB)
             adRevenue.setRevenue(
                 (adValue.valueMicros * 1.0 / 1000000.0), adValue.currencyCode
             )
-            adRevenue.adRevenueNetwork = ad.responseInfo?.loadedAdapterResponseInfo?.adSourceName
+            adRevenue.adRevenueNetwork =
+                nativeAd.responseInfo?.loadedAdapterResponseInfo?.adSourceName
             Adjust.trackAdRevenue(adRevenue)
         }
     }

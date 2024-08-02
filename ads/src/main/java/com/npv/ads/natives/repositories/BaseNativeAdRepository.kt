@@ -10,42 +10,32 @@ import com.npv.ads.natives.listeners.NativeAdChangedListener
 import com.npv.ads.natives.models.NativeDisplaySetting
 import com.npv.ads.natives.models.NativeSetting
 import com.npv.ads.natives.provider.IDefaultNativeSettingsProvider
-import com.npv.ads.revenue_tracker.IRevenueTracker
+import com.npv.ads.revenue_tracker.RevenueTrackerManager
 import com.npv.ads.sharedPref.IAdsSharedPref
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 abstract class BaseNativeAdRepository<T>(
     private val nativeAdConditions: INativeAdConditions,
     private val adsSharedPref: IAdsSharedPref,
     private val defaultSettingProvider: IDefaultNativeSettingsProvider,
-    private val revenueTracker: IRevenueTracker<T>
-) : INativeAdRepository<T> {
-    private val nativeDisplaySettingsMap = HashMap<String, NativeDisplaySetting>()
+    private val revenueTracker: RevenueTrackerManager
+) : NativeAdRepository {
+    private var nativeDisplaySettingsMap = mapOf<String, NativeDisplaySetting>()
     private val natives = ArrayList<T>()
     private var isLoading = false
     private var numberFailedLoad = 0
     private var timeLastFailedLoad = 0L
     private var listeners: ArrayList<NativeAdChangedListener> = ArrayList()
 
-    init {
-        loadLastConfig()
-    }
-
     private fun loadLastConfig() {
-        CoroutineScope(Dispatchers.IO).launch {
-            val json = adsSharedPref.getNativeSettings()
-            if (json.isEmpty()) return@launch
-            try {
-                val nativeAdSetting =
-                    Gson().fromJson(json, NativeSetting::class.java)
-                this@BaseNativeAdRepository.nativeDisplaySettingsMap.putAll(
-                    nativeAdSetting.getNativeDisplaySettingsMap()
-                )
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+        val json = adsSharedPref.getNativeSettings()
+        if (json.isEmpty()) return
+        try {
+            val nativeAdSetting =
+                Gson().fromJson(json, NativeSetting::class.java)
+            this@BaseNativeAdRepository.nativeDisplaySettingsMap =
+                nativeAdSetting.getNativeDisplaySettingsMap()
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
@@ -100,36 +90,35 @@ abstract class BaseNativeAdRepository<T>(
             return
         }
         isLoading = true
-        CoroutineScope(Dispatchers.Main).launch {
-            if (!nativeAdConditions.shouldLoad()) {
-                isLoading = false
-                Log.d(TAG, "loadIfNeed: return by nativeAdConditions.shouldLoad()")
-                return@launch
-            }
-
-            val currentSize = natives.size
-            val maxPreload = adsSharedPref.getNativePreloadMax()
-
-            if (currentSize >= maxPreload) {
-                isLoading = false
-                Log.d(TAG, "loadIfNeed: return by maxPreload")
-                return@launch
-            }
-            if (isMultipleFailedToLoad()) {
-                isLoading = false
-                Log.d(TAG, "loadIfNeed: return by isMultipleFailedToLoad")
-                return@launch
-            }
-            Log.d(TAG, "loadIfNeed: load")
-            load(id, maxPreload - currentSize)
+        if (!nativeAdConditions.shouldLoad()) {
+            isLoading = false
+            Log.d(TAG, "loadIfNeed: return by nativeAdConditions.shouldLoad()")
+            return
         }
+
+        val currentSize = natives.size
+        val maxPreload = adsSharedPref.getNativePreloadMax()
+
+        if (currentSize >= maxPreload) {
+            isLoading = false
+            Log.d(TAG, "loadIfNeed: return by maxPreload")
+            return
+        }
+        if (isMultipleFailedToLoad()) {
+            isLoading = false
+            Log.d(TAG, "loadIfNeed: return by isMultipleFailedToLoad")
+            return
+        }
+        Log.d(TAG, "loadIfNeed: load")
+        load(id, maxPreload - currentSize)
     }
 
-    override fun getNativeAd(): T? {
+    @Suppress("UNCHECKED_CAST")
+    override fun <Ad> getNativeAd(): Ad? {
         try {
             val nativeAd = natives[0]
             natives.remove(nativeAd)
-            return nativeAd
+            return nativeAd as? Ad
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -137,22 +126,9 @@ abstract class BaseNativeAdRepository<T>(
     }
 
     override fun getNativeDisplaySetting(id: String): NativeDisplaySetting? {
+        loadLastConfig()
         return this.nativeDisplaySettingsMap[id]
             ?: defaultSettingProvider.getDefaultNativeDisplaySettings()?.get(id)
-    }
-
-    override fun setNativeSettings(json: String) {
-        CoroutineScope(Dispatchers.Main).launch {
-            try {
-                if (json.isEmpty()) return@launch
-                adsSharedPref.setNativeSettings(json)
-                val nativeSetting = Gson().fromJson(json, NativeSetting::class.java)
-                adsSharedPref.setNativePreloadMax(nativeSetting.preloadMax)
-                this@BaseNativeAdRepository.nativeDisplaySettingsMap.putAll(nativeSetting.getNativeDisplaySettingsMap())
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
     }
 
 }

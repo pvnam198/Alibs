@@ -14,16 +14,16 @@ interface IAdsSharedPref {
 
     }
 
-    suspend fun getBannerSettings(): String
+    fun getBannerSettings(): String
 
-    suspend fun setBannerSettings(json: String)
+    fun setBannerSettings(json: String)
 
-    suspend fun getNativeSettings(): String
+    fun getNativeSettings(): String
 
-    suspend fun setNativeSettings(json: String)
+    fun setNativeSettings(json: String)
 
-    suspend fun getNativePreloadMax(): Int
+    fun getNativePreloadMax(): Int
 
-    suspend fun setNativePreloadMax(max: Int)
+    fun setNativePreloadMax(max: Int)
 
 }

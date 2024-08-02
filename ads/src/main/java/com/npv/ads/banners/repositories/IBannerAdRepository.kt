@@ -4,7 +4,7 @@ import com.npv.ads.banners.models.BannerSetting
 
 interface IBannerAdRepository {
 
-    suspend fun loadConfig()
+    fun loadConfig()
 
     fun getBannerSetting(id: String): BannerSetting?
 

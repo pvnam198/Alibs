@@ -1,16 +1,15 @@
 package com.npv.ads.di
 
 import android.content.Context
-import com.google.android.gms.ads.AdView
 import com.npv.ads.banners.conditions.IBannerCondition
+import com.npv.ads.banners.helpers.AdmobBannerHelperImpl
+import com.npv.ads.banners.helpers.BannerHelper
 import com.npv.ads.banners.provider.IDefaultBannerSettingsProvider
 import com.npv.ads.banners.repositories.BannerAdRepositoryImpl
 import com.npv.ads.banners.repositories.IBannerAdRepository
-import com.npv.ads.banners.use_case.IShowBannerUseCase
-import com.npv.ads.banners.use_case.SetBannerSettingsUseCase
-import com.npv.ads.banners.use_case.ShowBannerAdmobUseCaseImpl
-import com.npv.ads.revenue_tracker.AdjustAdViewTrackerImpl
-import com.npv.ads.revenue_tracker.IRevenueTracker
+import com.npv.ads.banners.use_case.BannerAdManager
+import com.npv.ads.banners.use_case.BannerAdManagerImpl
+import com.npv.ads.revenue_tracker.RevenueTrackerManager
 import com.npv.ads.sharedPref.IAdsSharedPref
 import dagger.Module
 import dagger.Provides
@@ -30,20 +29,8 @@ class BannerModule {
 
     @Qualifier
     @Retention(AnnotationRetention.BINARY)
-    annotation class AdjustAdViewTracker
+    annotation class AdmobBannerHelper
 
-    @Qualifier
-    @Retention(AnnotationRetention.BINARY)
-    annotation class AdmobBannerAdRepository
-
-    @AdjustAdViewTracker
-    @Provides
-    @Singleton
-    fun provideRevenueTracker(): IRevenueTracker<AdView> {
-        return AdjustAdViewTrackerImpl()
-    }
-
-    @AdmobBannerAdRepository
     @Provides
     @Singleton
     fun provideBannerAdRepository(
@@ -53,24 +40,25 @@ class BannerModule {
         return BannerAdRepositoryImpl(shared, provider)
     }
 
-    @ShowBannerAdmobUseCase
     @Provides
     @Singleton
-    fun provideShowBannerAdmobUseCase(
+    @AdmobBannerHelper
+    fun provideBannerHelper(
         @ApplicationContext context: Context,
-        condition: IBannerCondition,
-        @AdmobBannerAdRepository repo: IBannerAdRepository,
-        @AdjustAdViewTracker revenueTracker: IRevenueTracker<AdView>
-    ): IShowBannerUseCase {
-        return ShowBannerAdmobUseCaseImpl(context, condition, repo, revenueTracker)
+        revenueTracker: RevenueTrackerManager
+    ): BannerHelper<*> {
+        return AdmobBannerHelperImpl(context, revenueTracker)
     }
 
     @Provides
     @Singleton
-    fun provideSetBannerSettingsUseCase(
-        @AdmobBannerAdRepository repo: IBannerAdRepository,
-    ): SetBannerSettingsUseCase {
-        return SetBannerSettingsUseCase(repo)
+    fun provideAdmobBannerAdManager(
+        @ApplicationContext context: Context,
+        condition: IBannerCondition,
+        repo: IBannerAdRepository,
+        @AdmobBannerHelper admobBannerHelper: BannerHelper<*>
+    ): BannerAdManager {
+        return BannerAdManagerImpl(condition, repo, admobBannerHelper)
     }
 
 }

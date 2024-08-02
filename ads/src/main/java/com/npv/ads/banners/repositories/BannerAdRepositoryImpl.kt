@@ -16,8 +16,8 @@ class BannerAdRepositoryImpl(
 
     private var bannerSettings = HashMap<String, BannerSetting>()
 
-    override suspend fun loadConfig() =
-        collectBannerSettings(withContext(Dispatchers.IO) { adsSharedPref.getBannerSettings() })
+    override fun loadConfig() =
+        collectBannerSettings(adsSharedPref.getBannerSettings())
 
     override fun getBannerSetting(id: String): BannerSetting? {
         return bannerSettings[id] ?: defaultBannerSettingsProvider.getDefaultBannerSettings()

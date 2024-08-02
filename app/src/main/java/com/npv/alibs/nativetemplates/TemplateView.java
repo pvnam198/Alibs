@@ -252,7 +252,6 @@ public class TemplateView extends FrameLayout implements ITemplateView<NativeAd>
      * method does not destroy the template view.
      * https://developers.google.com/admob/android/native-unified#destroy_ad
      */
-    @Override
     public void destroyNativeAd() {
         nativeAd.destroy();
     }

@@ -8,7 +8,7 @@ import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.nativead.NativeAd
 import com.npv.ads.natives.conditions.INativeAdConditions
 import com.npv.ads.natives.provider.IDefaultNativeSettingsProvider
-import com.npv.ads.revenue_tracker.IRevenueTracker
+import com.npv.ads.revenue_tracker.RevenueTrackerManager
 import com.npv.ads.sharedPref.IAdsSharedPref
 
 class AdmobNativeAdRepositoryImpl(
@@ -16,7 +16,7 @@ class AdmobNativeAdRepositoryImpl(
     nativeAdConditions: INativeAdConditions,
     adsSharedPref: IAdsSharedPref,
     defaultSettingProvider: IDefaultNativeSettingsProvider,
-    revenueTracker: IRevenueTracker<NativeAd>
+    revenueTracker: RevenueTrackerManager
 ) : BaseNativeAdRepository<NativeAd>(
     nativeAdConditions,
     adsSharedPref,

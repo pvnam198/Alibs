@@ -2,25 +2,23 @@ package com.npv.ads.banners.view_models
 
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModel
-import com.npv.ads.banners.repositories.IBannerAdRepository
-import com.npv.ads.banners.use_case.IShowBannerUseCase
-import com.npv.ads.di.BannerModule
+import com.npv.ads.AdDistributor
+import com.npv.ads.banners.use_case.BannerAdManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class AdmobBannerViewModel @Inject constructor(
-    @BannerModule.AdmobBannerAdRepository private val bannerRepository: IBannerAdRepository,
-    @BannerModule.ShowBannerAdmobUseCase private val showBannerUseCase: IShowBannerUseCase
+    private val bannerAdManager: BannerAdManager
 ) : ViewModel() {
 
-
-    fun showOrHideIfNeed(
+    fun showIfNeed(
+        adDistributor: AdDistributor,
         viewGroup: ViewGroup,
         adId: String,
-        bannerSettingId: String?
+        bannerSettingId: String?= null
     ) {
-        showBannerUseCase.showIfNeed(viewGroup, adId, bannerSettingId)
+        bannerAdManager.showIfNeed(adDistributor, viewGroup, adId, bannerSettingId)
     }
 
 }

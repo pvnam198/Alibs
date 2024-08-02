@@ -4,5 +4,4 @@ public interface ITemplateView<T> {
 
     void setNativeAd(T nativeAd);
 
-    void destroyNativeAd();
 }
