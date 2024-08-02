@@ -21,6 +21,7 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -245,6 +246,11 @@ public class TemplateView extends FrameLayout implements ITemplateView<NativeAd>
         }
 
         nativeAdView.setNativeAd(nativeAd);
+    }
+
+    @Override
+    public View getView() {
+        return this;
     }
 
     /**
