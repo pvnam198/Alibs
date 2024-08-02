@@ -1,5 +1,6 @@
 package com.npv.ads.natives.use_case
 
+import android.util.Log
 import com.npv.ads.AdDistributor
 import com.npv.ads.di.NativeModule
 import com.npv.ads.natives.models.NativeDisplaySetting
@@ -16,6 +17,7 @@ class ShouldShowNativeAdUseCaseImpl @Inject constructor(
         adDistributor: AdDistributor,
         nativeDisplaySettingId: String?
     ): Boolean {
+        Log.d("log_debugs", "ShouldShowNativeAdUseCaseImpl_invoke: $nativeDisplaySettingId")
         val nativeDisplaySetting: NativeDisplaySetting? = when {
             nativeDisplaySettingId == null -> null
             adDistributor == AdDistributor.ADMOB -> admobNativeAdRepository.getNativeDisplaySetting(
@@ -25,6 +27,7 @@ class ShouldShowNativeAdUseCaseImpl @Inject constructor(
             adDistributor == AdDistributor.MAX -> null
             else -> null
         }
+        Log.d("log_debugs", "ShouldShowNativeAdUseCaseImpl_invoke nativeDisplaySetting: $nativeDisplaySetting")
         if (nativeDisplaySetting == null) return true
         return nativeDisplaySetting.show
     }

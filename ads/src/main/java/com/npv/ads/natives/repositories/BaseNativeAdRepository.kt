@@ -32,9 +32,13 @@ abstract class BaseNativeAdRepository<T>(
         try {
             val nativeAdSetting =
                 Gson().fromJson(json, NativeSetting::class.java)
+            nativeAdSetting.nativeDisplaySettings.forEach {
+                Log.d("log_debugs", "BaseNativeAdRepository_loadLastConfig nativeDisplaySettings: $it")
+            }
             this@BaseNativeAdRepository.nativeDisplaySettingsMap =
                 nativeAdSetting.getNativeDisplaySettingsMap()
         } catch (e: Exception) {
+            Log.d("log_debugs", "BaseNativeAdRepository_loadLastConfig Exception: $e")
             e.printStackTrace()
         }
     }
@@ -127,6 +131,7 @@ abstract class BaseNativeAdRepository<T>(
 
     override fun getNativeDisplaySetting(id: String): NativeDisplaySetting? {
         loadLastConfig()
+        Log.d(TAG, "getNativeDisplaySetting: $id")
         return this.nativeDisplaySettingsMap[id]
             ?: defaultSettingProvider.getDefaultNativeDisplaySettings()?.get(id)
     }
