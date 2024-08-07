@@ -1,5 +1,6 @@
 package com.npv.ads.natives.view_models
 
+import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -69,6 +70,11 @@ class NativeAdViewModelImpl @Inject constructor(
         if (isBind) return
         nativeViewsMap[templateView] =
             nativeAdViewBinder.bind(adDistributor, templateView, nativeDisplaySettingId)
+        if (nativeViewsMap[templateView] == true) {
+            templateView.view?.visibility = View.VISIBLE
+        } else {
+            templateView.view?.visibility = View.GONE
+        }
     }
 
     override fun setNativeSettings(json: String) {
