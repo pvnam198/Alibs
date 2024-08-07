@@ -77,6 +77,10 @@ class NativeAdViewModelImpl @Inject constructor(
         }
     }
 
+    override fun isBinded(templateView: ITemplateView<*>): Boolean {
+        return nativeViewsMap[templateView] == true
+    }
+
     override fun setNativeSettings(json: String) {
         setNativeConfigUseCase(json)
     }

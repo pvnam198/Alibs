@@ -15,5 +15,7 @@ interface NativeAdViewModel {
         nativeDisplaySettingId: String? = null
     )
 
+    fun isBinded(templateView: ITemplateView<*>): Boolean
+
     fun setNativeSettings(json: String)
 }
