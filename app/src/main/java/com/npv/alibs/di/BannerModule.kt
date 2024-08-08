@@ -1,8 +1,8 @@
 package com.npv.alibs.di
 
-import com.npv.ads.banners.conditions.IBannerCondition
-import com.npv.ads.banners.models.BannerSetting
-import com.npv.ads.banners.provider.IDefaultBannerSettingsProvider
+import com.npv.ads.admob.banners.models.BannerCondition
+import com.npv.ads.admob.banners.models.BannerSetting
+import com.npv.ads.admob.banners.provider.DefaultBannerSettingsProvider
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,9 +15,9 @@ class BannerModule {
 
     @Provides
     @Singleton
-    fun provideNativeAdConditions(): IDefaultBannerSettingsProvider {
-        return object : IDefaultBannerSettingsProvider {
-            override fun getDefaultBannerSettings(): Map<String, BannerSetting> {
+    fun provideNativeAdConditions(): DefaultBannerSettingsProvider {
+        return object : DefaultBannerSettingsProvider {
+            override fun getDefaultBannerSettings(): List<BannerSetting> {
                 return emptyMap()
             }
         }
@@ -25,8 +25,8 @@ class BannerModule {
 
     @Provides
     @Singleton
-    fun provideBannerCondition(): IBannerCondition {
-        return object : IBannerCondition {
+    fun provideBannerCondition(): BannerCondition {
+        return object : BannerCondition {
             override fun shouldLoad(): Boolean {
                 return true
             }

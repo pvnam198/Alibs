@@ -1,8 +1,6 @@
-package com.npv.ads.di
+package com.npv.ads.sharedPref
 
 import android.content.Context
-import com.npv.ads.sharedPref.AdsSharedPref
-import com.npv.ads.sharedPref.IAdsSharedPref
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,14 +10,12 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class SharedModule {
+class AdsSharedPrefAppModule {
 
     @Provides
     @Singleton
-    fun provideIAdsSharedPref(
-        @ApplicationContext context: Context,
-    ): IAdsSharedPref {
-        return AdsSharedPref(context)
+    fun provideAdsSharedPref(@ApplicationContext context: Context): AdsSharedPref {
+        return AdsSharedPrefImpl(context)
     }
 
 }

@@ -11,7 +11,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.gms.ads.nativead.NativeAd
 import com.npv.ads.AdDistributor
-import com.npv.ads.banners.use_case.BannerAdManager
+import com.npv.ads.admob.banners.use_case.BannerAdManager
 import com.npv.ads.natives.use_case.GetNativeAdUseCase
 import com.npv.ads.natives.use_case.LoadNativeAdUseCase
 import com.npv.ads.natives.use_case.SetNativeConfigUseCase

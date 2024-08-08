@@ -1,10 +1,7 @@
 package com.npv.ads.di
 
 import android.content.Context
-import com.google.android.gms.ads.nativead.NativeAd
-import com.npv.ads.natives.conditions.INativeAdConditions
-import com.npv.ads.natives.provider.IDefaultNativeSettingsProvider
-import com.npv.ads.natives.repositories.AdmobNativeAdRepositoryImpl
+import com.npv.ads.admob.natives.models.NativeAdCondition
 import com.npv.ads.natives.repositories.NativeAdRepository
 import com.npv.ads.natives.use_case.GetNativeAdRepositoryImpl
 import com.npv.ads.natives.use_case.GetNativeAdRepositoryUseCase
@@ -41,12 +38,12 @@ class NativeModule {
     @Singleton
     fun provideAdmobNativeAdRepository(
         @ApplicationContext context: Context,
-        conditions: INativeAdConditions,
+        conditions: NativeAdCondition,
         shared: IAdsSharedPref,
-        defaultSettingProvider: IDefaultNativeSettingsProvider,
+        defaultSettingProvider: com.npv.ads.admob.natives.provider.IDefaultNativeSettingsProvider,
         revenueTracker: RevenueTrackerManager
     ): NativeAdRepository {
-        return AdmobNativeAdRepositoryImpl(
+        return com.npv.ads.admob.natives.repositories.AdmobNativeAdRepositoryImpl(
             context,
             conditions,
             shared,

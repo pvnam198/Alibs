@@ -1,8 +1,6 @@
 package com.npv.alibs.di
 
-import com.npv.ads.natives.conditions.INativeAdConditions
-import com.npv.ads.natives.models.NativeDisplaySetting
-import com.npv.ads.natives.provider.IDefaultNativeSettingsProvider
+import com.npv.ads.admob.natives.models.NativeAdCondition
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,8 +13,8 @@ class NativeModule {
 
     @Provides
     @Singleton
-    fun provideNativeAdConditions(): INativeAdConditions {
-        return object : INativeAdConditions {
+    fun provideNativeAdConditions(): NativeAdCondition {
+        return object : NativeAdCondition {
             override fun shouldLoad(): Boolean {
                 return true
             }
@@ -25,9 +23,9 @@ class NativeModule {
 
     @Provides
     @Singleton
-    fun provideDefaultNativeSettingsProvider(): IDefaultNativeSettingsProvider {
-        return object : IDefaultNativeSettingsProvider {
-            override fun getDefaultNativeDisplaySettings(): Map<String, NativeDisplaySetting> {
+    fun provideDefaultNativeSettingsProvider(): com.npv.ads.admob.natives.provider.IDefaultNativeSettingsProvider {
+        return object : com.npv.ads.admob.natives.provider.IDefaultNativeSettingsProvider {
+            override fun getDefaultNativeDisplaySettings(): Map<String, com.npv.ads.admob.natives.models.NativeDisplaySetting> {
                 return emptyMap()
             }
         }
