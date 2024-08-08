@@ -5,19 +5,13 @@ import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.google.android.gms.ads.nativead.NativeAd
-import com.npv.ads.AdDistributor
-import com.npv.ads.admob.banners.use_case.BannerAdManager
-import com.npv.ads.natives.use_case.GetNativeAdUseCase
-import com.npv.ads.natives.use_case.LoadNativeAdUseCase
-import com.npv.ads.natives.use_case.SetNativeConfigUseCase
-import com.npv.ads.natives.view_models.NativeAdViewModel
-import com.npv.ads.natives.view_models.NativeAdViewModelImpl
-import com.npv.ads.natives.views.NativeAdViewBinder
+import com.npv.ads.admob.banners.manager.AdmobBannerManager
+import com.npv.ads.admob.banners.models.BannerSize
+import com.npv.ads.admob.natives.listeners.NativeAdChangedListener
+import com.npv.ads.admob.natives.repositories.NativeAdRepository
 import com.npv.alibs.nativetemplates.TemplateView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -26,21 +20,10 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity() {
 
     @Inject
-    lateinit var bannerAdManager: BannerAdManager
+    lateinit var admobBannerManager: AdmobBannerManager
 
     @Inject
-    lateinit var getNativeAdUseCase: GetNativeAdUseCase
-
-    @Inject
-    lateinit var loadNativeAdUseCase: LoadNativeAdUseCase
-
-    @Inject
-    lateinit var setNativeConfigUseCase: SetNativeConfigUseCase
-
-    @Inject
-    lateinit var nativeAdView: NativeAdViewBinder
-
-    private val nativeViewModel: NativeAdViewModel by viewModels<NativeAdViewModelImpl>()
+    lateinit var nativeAdRepository: NativeAdRepository
 
     private lateinit var bannerView: FrameLayout
     private lateinit var templateView: TemplateView
@@ -141,34 +124,36 @@ class MainActivity : AppCompatActivity() {
                 "  ],\n" +
                 "  \"preload_max\": 2\n" +
                 "}"
-        setNativeConfigUseCase(nativeJson)
+
 
         templateView = findViewById(R.id.template_view)
         btnLoadNativeAd = findViewById(R.id.btn_load_native)
         bannerView = findViewById(R.id.banner_view)
 
-        nativeViewModel.getNativeChangedLiveData(listOf(AdDistributor.ADMOB)).observe(this) {
-            nativeViewModel.bind(AdDistributor.ADMOB, templateView, "com.wavez.battery.charging.features.ads.ONBOARDING_LANGUAGE_ACTIVITY")
-        }
+        nativeAdRepository.addListener(object : NativeAdChangedListener {
+            override fun onNativeChanged() {
+                val nativeAd = nativeAdRepository.getNativeAd("main_screen")
+                Log.d("log_debugs", "MainActivity_onNativeChanged: $nativeAd")
+                nativeAd?.let {
+                    templateView.setNativeAd(it)
+                    nativeAdRepository.releaseNative("main_screen")
+                }
+            }
+        })
+
+        nativeAdRepository.setNativeAdSetting(nativeJson)
+        nativeAdRepository.load("ca-app-pub-3940256099942544/2247696110")
 
         btnLoadNativeAd.setOnClickListener {
-            loadNative()
+            nativeAdRepository.load("ca-app-pub-3940256099942544/2247696110")
         }
 
-        bannerAdManager.showIfNeed(
-            AdDistributor.ADMOB,
-            bannerView,
-            "ca-app-pub-3940256099942544/6300978111",
-        )
-
-        Log.d(
-            "log_debugs",
-            "MainActivity_onCreate: ${getNativeAdUseCase.invoke<NativeAd>(AdDistributor.ADMOB)}"
+        admobBannerManager.displayAdIfLoaded(
+            adUnitId = "ca-app-pub-3940256099942544/2014213617",
+            parent = bannerView,
+            bannerSize = BannerSize.FitParent(bannerView)
         )
 
     }
 
-    private fun loadNative() {
-        loadNativeAdUseCase.load(AdDistributor.ADMOB, "ca-app-pub-3940256099942544/2247696110")
-    }
 }

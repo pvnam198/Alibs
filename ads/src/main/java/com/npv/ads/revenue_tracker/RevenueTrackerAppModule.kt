@@ -1,11 +1,12 @@
 package com.npv.ads.revenue_tracker
 
+import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-@Singleton
+@Module
 @InstallIn(SingletonComponent::class)
 class RevenueTrackerAppModule {
 
@@ -19,15 +20,6 @@ class RevenueTrackerAppModule {
     @Singleton
     fun provideNativeAdRevenueTracker(): NativeAdRevenueTracker {
         return NativeAdRevenueTrackerImpl()
-    }
-
-    @Singleton
-    @Provides
-    fun provideRevenueTrackerManager(
-        adViewRevenueTracker: AdViewRevenueTracker,
-        nativeAdRevenueTracker: NativeAdRevenueTracker,
-    ): RevenueTrackerManager {
-        return RevenueTrackerManagerImpl(adViewRevenueTracker, nativeAdRevenueTracker)
     }
 
 }

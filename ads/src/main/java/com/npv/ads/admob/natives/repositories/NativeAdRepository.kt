@@ -1,18 +1,31 @@
 package com.npv.ads.admob.natives.repositories
 
+import com.google.android.gms.ads.nativead.NativeAd
 import com.npv.ads.admob.natives.listeners.NativeAdChangedListener
+import com.npv.ads.admob.natives.models.NativeAdCondition
 import com.npv.ads.admob.natives.models.NativeDisplaySetting
+import com.npv.ads.admob.natives.provider.DefaultNativeSettingsProvider
 
 interface NativeAdRepository {
 
-    fun addListener(ls: com.npv.ads.admob.natives.listeners.NativeAdChangedListener)
+    fun setNativeAdSetting(data: String)
 
-    fun removeListener(ls: com.npv.ads.admob.natives.listeners.NativeAdChangedListener)
+    fun addListener(ls: NativeAdChangedListener)
 
-    fun <Ad> getNativeAd(): Ad?
+    fun removeListener(ls: NativeAdChangedListener)
 
-    fun loadIfNeed(id: String)
+    fun getNativeAd(): NativeAd?
 
-    fun getNativeDisplaySetting(id: String): com.npv.ads.admob.natives.models.NativeDisplaySetting?
+    fun getNativeAd(id: String): NativeAd?
+
+    fun releaseNative(id: String)
+
+    fun load(id: String)
+
+    fun getNativeDisplaySetting(id: String): NativeDisplaySetting?
+
+    fun setDefaultNativeSettingsProvider(defaultNativeSettingsProvider: DefaultNativeSettingsProvider)
+
+    fun setNativeAdCondition(nativeAdCondition: NativeAdCondition)
 
 }

@@ -1,26 +1,26 @@
 package com.npv.ads.admob.natives.repositories
 
 import android.content.Context
+import android.util.Log
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdLoader
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.nativead.NativeAd
-import com.npv.ads.admob.natives.models.NativeAdCondition
-import com.npv.ads.revenue_tracker.RevenueTrackerManager
-import com.npv.ads.sharedPref.IAdsSharedPref
+import com.npv.ads.revenue_tracker.NativeAdRevenueTracker
+import com.npv.ads.sharedPref.AdsSharedPref
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class AdmobNativeAdRepositoryImpl(
-    private val context: Context,
-    nativeAdConditions: NativeAdCondition,
-    adsSharedPref: IAdsSharedPref,
-    defaultSettingProvider: com.npv.ads.admob.natives.provider.IDefaultNativeSettingsProvider,
-    revenueTracker: RevenueTrackerManager
-) : com.npv.ads.admob.natives.repositories.BaseNativeAdRepository<NativeAd>(
-    nativeAdConditions,
-    adsSharedPref,
-    defaultSettingProvider,
-    revenueTracker
+@Singleton
+class NativeAdRepositoryImpl @Inject constructor(
+    @ApplicationContext private val context: Context,
+    adsSharedPref: AdsSharedPref,
+    nativeAdRevenueTracker: NativeAdRevenueTracker
+) : BaseNativeAdRepository(
+    adsSharedPref = adsSharedPref,
+    revenueTracker = nativeAdRevenueTracker
 ) {
     override fun load(id: String, preloadMax: Int) {
         val natives = ArrayList<NativeAd>()
@@ -29,12 +29,15 @@ class AdmobNativeAdRepositoryImpl(
         }.withAdListener(object : AdListener() {
             override fun onAdLoaded() {
                 super.onAdLoaded()
+                Log.d("log_debugs", "NativeAdRepositoryImpl_onAdLoaded: ")
                 onAdLoaded(natives)
             }
 
             override fun onAdFailedToLoad(adError: LoadAdError) {
+                Log.d("log_debugs", "NativeAdRepositoryImpl_onAdFailedToLoad: ${adError.message}")
                 onAdFailedToLoad(adError.message)
             }
+
         }).build()
         adLoader.loadAds(AdRequest.Builder().build(), preloadMax)
     }

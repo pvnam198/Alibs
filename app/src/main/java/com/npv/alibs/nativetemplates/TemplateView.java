@@ -34,13 +34,12 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.google.android.gms.ads.nativead.MediaView;
 import com.google.android.gms.ads.nativead.NativeAd;
 import com.google.android.gms.ads.nativead.NativeAdView;
-import com.npv.ads.natives.views.ITemplateView;
 import com.npv.alibs.R;
 
 /**
  * Base class for a template view. *
  */
-public class TemplateView extends FrameLayout implements ITemplateView<NativeAd> {
+public class TemplateView extends FrameLayout {
 
     private int templateType;
     private NativeTemplateStyle styles;
@@ -189,7 +188,6 @@ public class TemplateView extends FrameLayout implements ITemplateView<NativeAd>
         return !TextUtils.isEmpty(store) && TextUtils.isEmpty(advertiser);
     }
 
-    @Override
     public void setNativeAd(NativeAd nativeAd) {
         this.nativeAd = nativeAd;
 
@@ -248,7 +246,6 @@ public class TemplateView extends FrameLayout implements ITemplateView<NativeAd>
         nativeAdView.setNativeAd(nativeAd);
     }
 
-    @Override
     public View getView() {
         return this;
     }

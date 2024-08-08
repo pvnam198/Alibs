@@ -29,7 +29,7 @@ class AdmobBannerManagerImpl @Inject constructor(
         bannerSettingId: String?,
         callback: ((AdView?) -> Unit)?
     ) {
-        if (bannerCondition?.shouldLoad() == true) {
+        if (bannerCondition?.shouldLoad() == false) {
             callback?.invoke(null)
             return
         }
