@@ -15,11 +15,25 @@ interface AdmobBannerManager {
         callback: ((AdView?) -> Unit)? = null
     )
 
+    fun load(
+        adUnitId: String,
+        bannerSize: BannerSize? = null,
+        collapsible: Boolean = false,
+        callback: ((AdView?) -> Unit)? = null
+    )
+
     fun displayAdIfLoaded(
         adUnitId: String,
         parent: ViewGroup,
         bannerSize: BannerSize? = null,
         bannerSettingId: String? = null,
+    )
+
+    fun displayAdIfLoaded(
+        adUnitId: String,
+        parent: ViewGroup,
+        bannerSize: BannerSize? = null,
+        collapsible: Boolean = false,
     )
 
     fun setBannerCondition(bannerCondition: BannerCondition)

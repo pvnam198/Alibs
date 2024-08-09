@@ -48,6 +48,29 @@ class AdmobBannerManagerImpl @Inject constructor(
         )
     }
 
+    override fun load(
+        adUnitId: String,
+        bannerSize: BannerSize?,
+        collapsible: Boolean,
+        callback: ((AdView?) -> Unit)?
+    ) {
+        if (bannerCondition?.shouldLoad() == false) {
+            callback?.invoke(null)
+            return
+        }
+        loader.load(
+            adUnitId = adUnitId,
+            adSize = adSizeCalculator.calculateBannerSize(bannerSize),
+            collapsible = collapsible,
+            callback = { adView ->
+                if (adView != null) {
+                    adViewRevenueTracker.trackAdRevenue(adView)
+                }
+                callback?.invoke(adView)
+            }
+        )
+    }
+
     override fun displayAdIfLoaded(
         adUnitId: String,
         parent: ViewGroup,
@@ -58,6 +81,27 @@ class AdmobBannerManagerImpl @Inject constructor(
             adUnitId = adUnitId,
             bannerSize = bannerSize,
             bannerSettingId = bannerSettingId,
+            callback = {
+                if (it != null) {
+                    parent.visibility = View.VISIBLE
+                    parent.removeAllViews()
+                    parent.addView(it)
+                } else {
+                    parent.visibility = View.GONE
+                }
+            })
+    }
+
+    override fun displayAdIfLoaded(
+        adUnitId: String,
+        parent: ViewGroup,
+        bannerSize: BannerSize?,
+        collapsible: Boolean
+    ) {
+        load(
+            adUnitId = adUnitId,
+            bannerSize = bannerSize,
+            collapsible = collapsible,
             callback = {
                 if (it != null) {
                     parent.visibility = View.VISIBLE
