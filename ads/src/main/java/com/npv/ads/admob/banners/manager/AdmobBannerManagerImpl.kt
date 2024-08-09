@@ -9,7 +9,7 @@ import com.npv.ads.admob.banners.models.BannerSize
 import com.npv.ads.admob.banners.provider.DefaultBannerSettingsProvider
 import com.npv.ads.admob.banners.repositories.BannerRepository
 import com.npv.ads.admob.banners.size_calculator.AdSizeCalculator
-import com.npv.ads.revenue_tracker.AdViewRevenueTracker
+import com.npv.ads.admob.revenue_tracker.AdViewRevenueTracker
 import javax.inject.Inject
 import javax.inject.Singleton
 

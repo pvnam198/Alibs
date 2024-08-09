@@ -15,11 +15,22 @@ class ConditionLoaderAppModule {
     @Retention(AnnotationRetention.BINARY)
     annotation class NativeConditionLoader
 
+    @Qualifier
+    @Retention(AnnotationRetention.BINARY)
+    annotation class InterstitialConditionLoader
+
     @Provides
     @Singleton
     @NativeConditionLoader
     fun provideNativeConditionLoader(): ConditionLoader {
         return NativeConditionLoaderImpl()
+    }
+
+    @Provides
+    @Singleton
+    @InterstitialConditionLoader
+    fun provideInterstitialConditionLoader(): ConditionLoader {
+        return InterstitialConditionLoaderImpl()
     }
 
 }

@@ -1,4 +1,4 @@
-package com.npv.ads.revenue_tracker
+package com.npv.ads.admob.revenue_tracker
 
 import com.google.android.gms.ads.nativead.NativeAd
 

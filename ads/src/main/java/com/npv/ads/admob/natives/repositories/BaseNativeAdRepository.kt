@@ -10,7 +10,7 @@ import com.npv.ads.admob.natives.models.NativeAdSetting
 import com.npv.ads.admob.natives.models.NativeDisplaySetting
 import com.npv.ads.admob.natives.provider.DefaultNativeSettingsProvider
 import com.npv.ads.load_condtions.ConditionLoader
-import com.npv.ads.revenue_tracker.NativeAdRevenueTracker
+import com.npv.ads.admob.revenue_tracker.NativeAdRevenueTracker
 import com.npv.ads.sharedPref.AdsSharedPref
 
 abstract class BaseNativeAdRepository(
@@ -99,12 +99,7 @@ abstract class BaseNativeAdRepository(
     }
 
     override fun load(id: String) {
-        Log.d(TAG, "load: native")
         synchronized(lockLoading){
-            Log.d(TAG, "synchronized load native")
-
-            Thread.sleep(5000)
-            Log.d(TAG, "after delay 5000 load native")
 
             val currentSize = natives.size
             val maxPreload = adsSharedPref.getNativePreloadMax()

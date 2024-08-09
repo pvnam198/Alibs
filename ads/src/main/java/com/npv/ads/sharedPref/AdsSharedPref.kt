@@ -12,7 +12,11 @@ interface AdsSharedPref {
 
         const val NATIVE_PRELOAD_MAX = "com.npv.ads.domain.shared.NATIVE_PRELOAD_MAX"
 
+        const val INTER_SHOW_GAP = "com.npv.ads.domain.shared.INTER_SHOW_GAP"
+
     }
+
+    var interShowGap: Long
 
     fun getBannerSettings(): String
 

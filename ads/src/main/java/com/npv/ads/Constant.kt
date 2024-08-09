@@ -6,6 +6,8 @@ object Constant {
 
     const val DEFAULT_NATIVE_PRELOAD_MAX = 1
 
+    const val DEFAULT_INTER_SHOW_GAP = 45000L
+
     const val MIN_FAILED_LOAD_TIME = 5_000L
 
     const val MAX_FAILED_LOAD_TIME = 10_000L

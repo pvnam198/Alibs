@@ -5,7 +5,7 @@ import com.npv.ads.admob.natives.repositories.NativeAdRepository
 import com.npv.ads.admob.natives.repositories.NativeAdRepositoryImpl
 import com.npv.ads.load_condtions.ConditionLoader
 import com.npv.ads.load_condtions.ConditionLoaderAppModule
-import com.npv.ads.revenue_tracker.NativeAdRevenueTracker
+import com.npv.ads.admob.revenue_tracker.NativeAdRevenueTracker
 import com.npv.ads.sharedPref.AdsSharedPref
 import dagger.Module
 import dagger.Provides

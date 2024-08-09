@@ -9,7 +9,7 @@ import com.npv.ads.admob.banners.repositories.BannerRepository
 import com.npv.ads.admob.banners.repositories.BannerRepositoryImpl
 import com.npv.ads.admob.banners.size_calculator.AdSizeCalculator
 import com.npv.ads.admob.banners.size_calculator.AdSizeCalculatorImpl
-import com.npv.ads.revenue_tracker.AdViewRevenueTracker
+import com.npv.ads.admob.revenue_tracker.AdViewRevenueTracker
 import com.npv.ads.sharedPref.AdsSharedPref
 import dagger.Module
 import dagger.Provides

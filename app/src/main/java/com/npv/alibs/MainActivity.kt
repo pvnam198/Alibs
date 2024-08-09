@@ -10,13 +10,11 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.npv.ads.admob.banners.manager.AdmobBannerManager
 import com.npv.ads.admob.banners.models.BannerSize
+import com.npv.ads.admob.interstitial.repositories.InterstitialRepository
 import com.npv.ads.admob.natives.listeners.NativeAdChangedListener
 import com.npv.ads.admob.natives.repositories.NativeAdRepository
 import com.npv.alibs.nativetemplates.TemplateView
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -28,9 +26,14 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var nativeAdRepository: NativeAdRepository
 
+    @Inject
+    lateinit var interstitialRepository: InterstitialRepository
+
     private lateinit var bannerView: FrameLayout
     private lateinit var templateView: TemplateView
     private lateinit var btnLoadNativeAd: View
+    private lateinit var btnLoadInterstitial: View
+    private lateinit var btnShowInterstitial: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -132,6 +135,8 @@ class MainActivity : AppCompatActivity() {
         templateView = findViewById(R.id.template_view)
         btnLoadNativeAd = findViewById(R.id.btn_load_native)
         bannerView = findViewById(R.id.banner_view)
+        btnLoadInterstitial = findViewById(R.id.btn_load_interstitial)
+        btnShowInterstitial = findViewById(R.id.btn_show_interstitial)
 
         nativeAdRepository.addListener(object : NativeAdChangedListener {
             override fun onNativeChanged() {
@@ -157,11 +162,18 @@ class MainActivity : AppCompatActivity() {
             bannerSize = BannerSize.FitParent(bannerView)
         )
 
+        btnLoadInterstitial.setOnClickListener {
+            interstitialRepository.load("ca-app-pub-3940256099942544/1033173712")
+        }
+
+        btnShowInterstitial.setOnClickListener {
+            interstitialRepository.show(this)
+        }
+
     }
 
     private fun loadNativeAd() {
-        CoroutineScope(Dispatchers.IO).launch {  nativeAdRepository.load("ca-app-pub-3940256099942544/2247696110") }
-        CoroutineScope(Dispatchers.IO).launch {  nativeAdRepository.load("ca-app-pub-3940256099942544/2247696110") }
+        nativeAdRepository.load("ca-app-pub-3940256099942544/2247696110")
     }
 
 }

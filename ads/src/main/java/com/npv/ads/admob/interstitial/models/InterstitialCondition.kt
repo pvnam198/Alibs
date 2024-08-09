@@ -2,6 +2,8 @@ package com.npv.ads.admob.interstitial.models
 
 interface InterstitialCondition {
 
-    fun shouldLoad()
+    fun shouldLoad(): Boolean
+
+    fun shouldShow(): Boolean
 
 }

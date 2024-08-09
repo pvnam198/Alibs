@@ -1,4 +1,4 @@
-package com.npv.ads.revenue_tracker
+package com.npv.ads.admob.revenue_tracker
 
 import com.adjust.sdk.Adjust
 import com.adjust.sdk.AdjustAdRevenue

@@ -1,4 +1,4 @@
-package com.npv.ads.revenue_tracker
+package com.npv.ads.admob.revenue_tracker
 
 import dagger.Module
 import dagger.Provides
@@ -20,6 +20,12 @@ class RevenueTrackerAppModule {
     @Singleton
     fun provideNativeAdRevenueTracker(): NativeAdRevenueTracker {
         return NativeAdRevenueTrackerImpl()
+    }
+
+    @Provides
+    @Singleton
+    fun provideInterstitialRevenueTracker(): InterstitialRevenueTracker {
+        return InterstitialRevenueTrackerImpl()
     }
 
 }

@@ -9,7 +9,7 @@ import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.nativead.NativeAd
 import com.npv.ads.load_condtions.ConditionLoader
 import com.npv.ads.load_condtions.ConditionLoaderAppModule
-import com.npv.ads.revenue_tracker.NativeAdRevenueTracker
+import com.npv.ads.admob.revenue_tracker.NativeAdRevenueTracker
 import com.npv.ads.sharedPref.AdsSharedPref
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
