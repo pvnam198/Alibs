@@ -20,7 +20,7 @@ dependencyResolutionManagement {
 Gradle:
 ```gradle
 dependencies {
-    implementation 'com.github.pvnam198:Alibs:Tag'
+    implementation 'com.github.pvnam198:Alibs:1.1.8'
 }
 ```
 
