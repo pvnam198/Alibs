@@ -79,7 +79,7 @@ class MainActivity : AppCompatActivity() {
         admobBannerManager.load(
             "ca-app-pub-3940256099942544/2014213617",
             bannerSize = null,
-            bannerSettingId = null,
+            type = null,
             callback = { adView ->
                 if (adView != null) {
                     bannerView.visibility = View.VISIBLE
