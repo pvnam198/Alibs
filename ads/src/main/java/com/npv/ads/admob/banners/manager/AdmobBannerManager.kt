@@ -26,4 +26,6 @@ interface AdmobBannerManager {
 
     fun setDefaultBannerSettingsProvider(defaultBannerSettingsProvider: DefaultBannerSettingsProvider)
 
+    fun setBannerSettings(json: String)
+
 }

@@ -77,4 +77,8 @@ class AdmobBannerManagerImpl @Inject constructor(
         bannerRepository.setDefaultBannerSettingsProvider(defaultBannerSettingsProvider)
     }
 
+    override fun setBannerSettings(json: String) {
+        bannerRepository.setBannerSettings(json)
+    }
+
 }
