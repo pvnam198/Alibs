@@ -14,6 +14,9 @@ import com.npv.ads.admob.natives.listeners.NativeAdChangedListener
 import com.npv.ads.admob.natives.repositories.NativeAdRepository
 import com.npv.alibs.nativetemplates.TemplateView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -142,7 +145,7 @@ class MainActivity : AppCompatActivity() {
         })
 
         nativeAdRepository.setNativeAdSetting(nativeJson)
-        nativeAdRepository.load("ca-app-pub-3940256099942544/2247696110")
+        loadNativeAd()
 
         btnLoadNativeAd.setOnClickListener {
             nativeAdRepository.load("ca-app-pub-3940256099942544/2247696110")
@@ -154,6 +157,11 @@ class MainActivity : AppCompatActivity() {
             bannerSize = BannerSize.FitParent(bannerView)
         )
 
+    }
+
+    private fun loadNativeAd() {
+        CoroutineScope(Dispatchers.IO).launch {  nativeAdRepository.load("ca-app-pub-3940256099942544/2247696110") }
+        CoroutineScope(Dispatchers.IO).launch {  nativeAdRepository.load("ca-app-pub-3940256099942544/2247696110") }
     }
 
 }

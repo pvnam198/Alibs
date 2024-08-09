@@ -3,25 +3,21 @@ package com.npv.ads.admob.natives.repositories
 import android.util.Log
 import com.google.android.gms.ads.nativead.NativeAd
 import com.google.gson.Gson
-import com.npv.ads.Constant.MAX_FAILED_LOAD_TIME
-import com.npv.ads.Constant.MIN_FAILED_LOAD_TIME
 import com.npv.ads.TAG
 import com.npv.ads.admob.natives.listeners.NativeAdChangedListener
 import com.npv.ads.admob.natives.models.NativeAdCondition
 import com.npv.ads.admob.natives.models.NativeAdSetting
 import com.npv.ads.admob.natives.models.NativeDisplaySetting
 import com.npv.ads.admob.natives.provider.DefaultNativeSettingsProvider
+import com.npv.ads.load_condtions.ConditionLoader
 import com.npv.ads.revenue_tracker.NativeAdRevenueTracker
 import com.npv.ads.sharedPref.AdsSharedPref
 
 abstract class BaseNativeAdRepository(
     private val adsSharedPref: AdsSharedPref,
-    private val revenueTracker: NativeAdRevenueTracker
+    private val revenueTracker: NativeAdRevenueTracker,
+    private val conditionLoader: ConditionLoader
 ) : NativeAdRepository {
-
-    private var isLoading = false
-    private var numberFailedLoad = 0
-    private var timeLastFailedLoad = 0L
 
     private var defaultNativeSettingsProvider: DefaultNativeSettingsProvider? = null
     private var nativeDisplaySettings: List<NativeDisplaySetting>? = null
@@ -32,6 +28,8 @@ abstract class BaseNativeAdRepository(
     private val listeners: ArrayList<NativeAdChangedListener> = ArrayList()
 
     private var nativeAdCondition: NativeAdCondition? = null
+
+    private val lockLoading = Any()
 
     private fun loadConfigs() {
         val json = adsSharedPref.getNativeSettings()
@@ -87,9 +85,7 @@ abstract class BaseNativeAdRepository(
     protected open fun onAdLoaded(nativeAds: List<NativeAd>) {
         trackAdRevenue(nativeAds)
         natives.addAll(nativeAds)
-        isLoading = false
-        numberFailedLoad = 0
-        timeLastFailedLoad = 0
+        conditionLoader.onLoaded()
         notifyNativeAdLoadingCompleted()
     }
 
@@ -98,48 +94,38 @@ abstract class BaseNativeAdRepository(
     }
 
     protected open fun onAdFailedToLoad(msg: String? = null) {
-        isLoading = false
-        timeLastFailedLoad = System.currentTimeMillis()
-        numberFailedLoad++
+        conditionLoader.onFailed()
         notifyNativeAdLoadingCompleted()
     }
 
-    private fun isMultipleFailedToLoad(): Boolean {
-        val lastFailedTimeToCurrentTime = System.currentTimeMillis() - timeLastFailedLoad
-        var pendingTime = MIN_FAILED_LOAD_TIME * numberFailedLoad
-        if (pendingTime > MAX_FAILED_LOAD_TIME) {
-            pendingTime = MAX_FAILED_LOAD_TIME
-        }
-        return lastFailedTimeToCurrentTime < pendingTime
-    }
-
     override fun load(id: String) {
-        if (isLoading) {
-            Log.d(TAG, "loadIfNeed: return by isLoading")
-            return
-        }
-        isLoading = true
-        if (nativeAdCondition?.shouldLoad() == false) {
-            isLoading = false
-            Log.d(TAG, "loadIfNeed: return by nativeAdConditions.shouldLoad()")
-            return
-        }
+        Log.d(TAG, "load: native")
+        synchronized(lockLoading){
+            Log.d(TAG, "synchronized load native")
 
-        val currentSize = natives.size
-        val maxPreload = adsSharedPref.getNativePreloadMax()
+            Thread.sleep(5000)
+            Log.d(TAG, "after delay 5000 load native")
 
-        if (currentSize >= maxPreload) {
-            isLoading = false
-            Log.d(TAG, "loadIfNeed: return by maxPreload")
-            return
+            val currentSize = natives.size
+            val maxPreload = adsSharedPref.getNativePreloadMax()
+            if (currentSize >= maxPreload) {
+                Log.d(TAG, "loadIfNeed: return by maxPreload")
+                return
+            }
+
+            if (nativeAdCondition?.shouldLoad() == false) {
+                Log.d(TAG, "loadIfNeed: return by condition")
+                return
+            }
+
+            if (!conditionLoader.shouldLoad()) {
+                Log.d(TAG, "loadIfNeed: return by conditionLoader")
+                return
+            }
+
+            conditionLoader.onLoading()
+            load(id, maxPreload - currentSize)
         }
-        if (isMultipleFailedToLoad()) {
-            isLoading = false
-            Log.d(TAG, "loadIfNeed: return by isMultipleFailedToLoad")
-            return
-        }
-        Log.d(TAG, "loadIfNeed: load")
-        load(id, maxPreload - currentSize)
     }
 
     override fun getNativeDisplaySetting(id: String): NativeDisplaySetting? {

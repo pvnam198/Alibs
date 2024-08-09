@@ -1,4 +1,4 @@
-package com.npv.ads
+package com.npv.ads.app
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext

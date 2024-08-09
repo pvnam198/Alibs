@@ -3,6 +3,8 @@ package com.npv.ads.admob.natives.di
 import android.content.Context
 import com.npv.ads.admob.natives.repositories.NativeAdRepository
 import com.npv.ads.admob.natives.repositories.NativeAdRepositoryImpl
+import com.npv.ads.load_condtions.ConditionLoader
+import com.npv.ads.load_condtions.ConditionLoaderAppModule
 import com.npv.ads.revenue_tracker.NativeAdRevenueTracker
 import com.npv.ads.sharedPref.AdsSharedPref
 import dagger.Module
@@ -21,12 +23,14 @@ class NativeAdAppModule {
     fun provideNativeAdRepository(
         @ApplicationContext context: Context,
         shared: AdsSharedPref,
-        revenueTracker: NativeAdRevenueTracker
+        revenueTracker: NativeAdRevenueTracker,
+        @ConditionLoaderAppModule.NativeConditionLoader conditionLoader: ConditionLoader
     ): NativeAdRepository {
         return NativeAdRepositoryImpl(
             context = context,
             adsSharedPref = shared,
             nativeAdRevenueTracker = revenueTracker,
+            conditionLoader = conditionLoader
         )
     }
 }

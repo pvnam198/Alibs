@@ -7,6 +7,8 @@ import com.google.android.gms.ads.AdLoader
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.nativead.NativeAd
+import com.npv.ads.load_condtions.ConditionLoader
+import com.npv.ads.load_condtions.ConditionLoaderAppModule
 import com.npv.ads.revenue_tracker.NativeAdRevenueTracker
 import com.npv.ads.sharedPref.AdsSharedPref
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -17,10 +19,12 @@ import javax.inject.Singleton
 class NativeAdRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
     adsSharedPref: AdsSharedPref,
-    nativeAdRevenueTracker: NativeAdRevenueTracker
+    nativeAdRevenueTracker: NativeAdRevenueTracker,
+    @ConditionLoaderAppModule.NativeConditionLoader conditionLoader: ConditionLoader
 ) : BaseNativeAdRepository(
     adsSharedPref = adsSharedPref,
-    revenueTracker = nativeAdRevenueTracker
+    revenueTracker = nativeAdRevenueTracker,
+    conditionLoader = conditionLoader
 ) {
     override fun load(id: String, preloadMax: Int) {
         val natives = ArrayList<NativeAd>()
