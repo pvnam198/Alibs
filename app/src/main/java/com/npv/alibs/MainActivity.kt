@@ -4,10 +4,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import com.google.android.gms.ads.nativead.NativeAd
 import com.npv.ads.admob.banners.manager.AdmobBannerManager
 import com.npv.ads.admob.banners.models.BannerSize
 import com.npv.ads.admob.interstitial.repositories.InterstitialRepository
@@ -37,143 +35,78 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-
-        val nativeJson = "{\n" +
-                "  \"native_display_settings\": [\n" +
-                "    {\n" +
-                "      \"id\": \"com.wavez.battery.charging.features.ads.ONBOARDING_LANGUAGE_ACTIVITY\",\n" +
-                "      \"show\": false\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"id\": \"com.wavez.battery.charging.features.ads.ONBOARDING_ACTIVITY\",\n" +
-                "      \"show\": true\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"id\": \"com.wavez.battery.charging.features.ads.DAILY_REWARD_ACTIVITY\",\n" +
-                "      \"show\": false\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"id\": \"com.wavez.battery.charging.features.ads.BATTERY_INFORMATION_ACTIVITY\",\n" +
-                "      \"show\": false\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"id\": \"com.wavez.battery.charging.features.ads.SETTING_LANGUAGE_ACTIVITY\",\n" +
-                "      \"show\": true\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"id\": \"com.wavez.battery.charging.features.ads.WIDGET_COMPLETE_ACTIVITY\",\n" +
-                "      \"show\": false\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"id\": \"com.wavez.battery.charging.features.ads.BATTERY_SAVING_ACTIVITY\",\n" +
-                "      \"show\": false\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"id\": \"com.wavez.battery.charging.features.ads.ULTRA_SAVING_ACTIVITY\",\n" +
-                "      \"show\": false\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"id\": \"com.wavez.battery.charging.features.ads.WALLPAPER_COMPLETE_ACTIVITY\",\n" +
-                "      \"show\": false\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"id\": \"com.wavez.battery.charging.features.ads.LIVE_WALLPAPER_DETAIL_ACTIVITY\",\n" +
-                "      \"show\": true\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"id\": \"com.wavez.battery.charging.features.ads.CHARGING_COMPLETE_FRAGMENT\",\n" +
-                "      \"show\": false\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"id\": \"com.wavez.battery.charging.features.ads.THEME_DETAIL_FRAGMENT\",\n" +
-                "      \"show\": false\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"id\": \"com.wavez.battery.charging.features.ads.SET_WIDGET_ACTIVITY\",\n" +
-                "      \"show\": false\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"id\": \"ADAPTER_NATIVE_ON_ViewMoreChargingActivity\",\n" +
-                "      \"show\": false\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"id\": \"ADAPTER_NATIVE_ON_ViewMoreWallpaperActivity\",\n" +
-                "      \"show\": false\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"id\": \"ADAPTER_NATIVE_ON_BatteryThemesFragment\",\n" +
-                "      \"show\": false\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"id\": \"ADAPTER_NATIVE_ON_EarnCreditActivity\",\n" +
-                "      \"show\": false\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"id\": \"ADAPTER_NATIVE_ON_WidgetsFragment\",\n" +
-                "      \"show\": false\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"id\": \"ADAPTER_NATIVE_ON_WallpaperFragment\",\n" +
-                "      \"show\": false\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"id\": \"ADAPTER_NATIVE_ON_MyWallpaperFragment\",\n" +
-                "      \"show\": false\n" +
-                "    }\n" +
-                "  ],\n" +
-                "  \"preload_max\": 2\n" +
-                "}"
-
-
         templateView = findViewById(R.id.template_view)
         btnLoadNativeAd = findViewById(R.id.btn_load_native)
         bannerView = findViewById(R.id.banner_view)
         btnLoadInterstitial = findViewById(R.id.btn_load_interstitial)
         btnShowInterstitial = findViewById(R.id.btn_show_interstitial)
 
-        nativeAdRepository.addListener(object : NativeAdChangedListener {
+        // Get nativeAd
+        val nativeAd: NativeAd? = nativeAdRepository.getNativeAd()
+
+        // Get specialNativeAd with id "main_screen"
+        // If there is a specialNativeAd marked as main_screen return it else...
+        // ...if not exists, load new native, otherwise return available native and mark as main_screen
+        var specialNativeAd: NativeAd? = nativeAdRepository.getNativeAd("main_screen")
+
+        // Release native with id "main_screen"
+        // nativeAdRepository.releaseNative("main_screen")
+
+        val nativeAdChangedListener = object : NativeAdChangedListener {
             override fun onNativeChanged() {
-                val nativeAd = nativeAdRepository.getNativeAd("main_screen")
-                Log.d("log_debugs", "MainActivity_onNativeChanged: $nativeAd")
-                nativeAd?.let {
+                specialNativeAd = nativeAdRepository.getNativeAd("main_screen")
+                Log.d("log_debugs", "MainActivity_onNativeChanged: $specialNativeAd")
+                specialNativeAd?.let {
                     templateView.setNativeAd(it)
-                    nativeAdRepository.releaseNative("main_screen")
                 }
             }
-        })
-
-        nativeAdRepository.setNativeAdSetting(nativeJson)
-        loadNativeAd()
-
-        btnLoadNativeAd.setOnClickListener {
-            nativeAdRepository.load("ca-app-pub-3940256099942544/2247696110")
         }
 
+        // Listen native ad change
+        nativeAdRepository.addListener(nativeAdChangedListener)
+
+        // Remove listener
+        // nativeAdRepository.removeListener(nativeAdChangedListener)
+
+        // Set NativeAdSetting
+        nativeAdRepository.setNativeAdSetting("json")
+
+        // Load native
+        nativeAdRepository.load("ca-app-pub-3940256099942544/2247696110")
+
+        // Load banner
+        admobBannerManager.load(
+            "ca-app-pub-3940256099942544/2014213617",
+            bannerSize = null,
+            bannerSettingId = null,
+            callback = { adView ->
+                if (adView != null) {
+                    bannerView.visibility = View.VISIBLE
+                    bannerView.removeAllViews()
+                    bannerView.addView(adView)
+                } else {
+                    bannerView.visibility = View.GONE
+                }
+            })
+
+        // bannerView with show if loaded else hide
         admobBannerManager.displayAdIfLoaded(
             adUnitId = "ca-app-pub-3940256099942544/2014213617",
             parent = bannerView,
             bannerSize = BannerSize.FitParent(bannerView)
         )
 
-        btnLoadInterstitial.setOnClickListener {
-            interstitialRepository.load("ca-app-pub-3940256099942544/1033173712")
-        }
+        // Load interstitial ad
+        interstitialRepository.load("ca-app-pub-3940256099942544/1033173712")
 
+        // Show interstitial ad
         btnShowInterstitial.setOnClickListener {
-            interstitialRepository.show(this)
+
+            // If preloadAdUnitId != null, load new interstitial ad
+            interstitialRepository.show(this, onDismiss = {
+
+            }, preloadAdUnitId = null)
         }
-
     }
-
-    private fun loadNativeAd() {
-        nativeAdRepository.load("ca-app-pub-3940256099942544/2247696110")
-    }
-
 }
