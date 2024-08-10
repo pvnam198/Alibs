@@ -15,6 +15,14 @@ interface InterstitialRepository {
         preloadAdUnitId: String? = null
     )
 
+    fun forceShow(
+        activity: Activity,
+        onDismiss: (() -> Unit)? = null,
+        preloadAdUnitId: String? = null
+    )
+
+    fun isAvailable(): Boolean
+
     fun setInterShowGap(gap: Long)
 
 }

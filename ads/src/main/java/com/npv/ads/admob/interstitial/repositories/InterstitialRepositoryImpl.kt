@@ -90,33 +90,58 @@ class InterstitialRepositoryImpl @Inject constructor(
                 onDismiss?.invoke()
                 return
             }
-            this.interstitialAd = null
-            isShowing = true
-            interstitialAd.fullScreenContentCallback = object : FullScreenContentCallback() {
-                override fun onAdDismissedFullScreenContent() {
-                    super.onAdDismissedFullScreenContent()
-                    Log.d(
-                        "log_debugs", "InterstitialRepositoryImpl_onAdDismissedFullScreenContent: "
-                    )
-                    lastDismissTime = System.currentTimeMillis()
-                    isShowing = false
-                    onDismiss?.invoke()
-                    load(preloadAdUnitId ?: return)
-                }
-
-                override fun onAdFailedToShowFullScreenContent(p0: AdError) {
-                    super.onAdFailedToShowFullScreenContent(p0)
-                    Log.d(
-                        "log_debugs",
-                        "InterstitialRepositoryImpl_onAdFailedToShowFullScreenContent: "
-                    )
-                    isShowing = false
-                    onDismiss?.invoke()
-                    load(preloadAdUnitId ?: return)
-                }
-            }
-            interstitialAd.show(activity)
+            showAd(interstitialAd, activity, onDismiss, preloadAdUnitId)
         }
+    }
+
+    override fun forceShow(activity: Activity, onDismiss: (() -> Unit)?, preloadAdUnitId: String?) {
+        synchronized(lockShow) {
+            if (isShowing) return
+            val interstitialAd = this.interstitialAd
+            if (interstitialAd == null) {
+                load(preloadAdUnitId ?: return)
+                onDismiss?.invoke()
+                return
+            }
+            showAd(interstitialAd, activity, onDismiss, preloadAdUnitId)
+        }
+    }
+
+    private fun showAd(
+        interstitialAd: InterstitialAd,
+        activity: Activity,
+        onDismiss: (() -> Unit)?,
+        preloadAdUnitId: String?
+    ) {
+        isShowing = true
+        this.interstitialAd = null
+        load(preloadAdUnitId ?: return)
+        interstitialAd.fullScreenContentCallback = object : FullScreenContentCallback() {
+            override fun onAdDismissedFullScreenContent() {
+                super.onAdDismissedFullScreenContent()
+                Log.d(
+                    "log_debugs", "InterstitialRepositoryImpl_onAdDismissedFullScreenContent: "
+                )
+                lastDismissTime = System.currentTimeMillis()
+                isShowing = false
+                onDismiss?.invoke()
+            }
+
+            override fun onAdFailedToShowFullScreenContent(p0: AdError) {
+                super.onAdFailedToShowFullScreenContent(p0)
+                Log.d(
+                    "log_debugs",
+                    "InterstitialRepositoryImpl_onAdFailedToShowFullScreenContent: "
+                )
+                isShowing = false
+                onDismiss?.invoke()
+            }
+        }
+        interstitialAd.show(activity)
+    }
+
+    override fun isAvailable(): Boolean {
+        return interstitialAd != null
     }
 
     override fun setInterShowGap(gap: Long) {
