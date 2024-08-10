@@ -1,4 +1,4 @@
-package com.npv.ads.admob.banners.models
+package com.npv.ads.models.banners
 
 sealed class CollapsibleType {
     data class BannerSettingDefined(val bannerSettingId: String) : CollapsibleType()

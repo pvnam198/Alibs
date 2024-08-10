@@ -2,10 +2,10 @@ package com.npv.ads.admob.banners.manager
 
 import android.view.ViewGroup
 import com.google.android.gms.ads.AdView
-import com.npv.ads.admob.banners.models.BannerCondition
-import com.npv.ads.admob.banners.models.CollapsibleType
-import com.npv.ads.admob.banners.models.BannerSize
+import com.npv.ads.models.banners.CollapsibleType
+import com.npv.ads.models.banners.BannerSize
 import com.npv.ads.admob.banners.provider.DefaultBannerSettingsProvider
+import com.npv.ads.models.MoreCondition
 
 interface AdmobBannerManager {
 
@@ -23,7 +23,7 @@ interface AdmobBannerManager {
         bannerSize: BannerSize? = null,
     )
 
-    fun setBannerCondition(bannerCondition: BannerCondition)
+    fun setMoreCondition(condition: MoreCondition)
 
     fun setDefaultBannerSettingsProvider(defaultBannerSettingsProvider: DefaultBannerSettingsProvider)
 

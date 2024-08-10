@@ -1,9 +1,9 @@
-package com.npv.ads.load_condtions
+package com.npv.ads.section_loader
 
 import com.npv.ads.Constant.MAX_FAILED_LOAD_TIME
 import com.npv.ads.Constant.MIN_FAILED_LOAD_TIME
 
-abstract class BaseConditionLoader : ConditionLoader {
+class SectionLoaderImpl : SectionLoader {
 
     private var isLoading = false
     private var numberFailedLoad = 0

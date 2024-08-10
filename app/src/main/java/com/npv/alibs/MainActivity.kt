@@ -7,8 +7,8 @@ import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.ads.nativead.NativeAd
 import com.npv.ads.admob.banners.manager.AdmobBannerManager
-import com.npv.ads.admob.banners.models.BannerSize
-import com.npv.ads.admob.interstitial.repositories.InterstitialRepository
+import com.npv.ads.admob.interstitial.manager.InterstitialAdManager
+import com.npv.ads.models.banners.BannerSize
 import com.npv.ads.admob.natives.listeners.NativeAdChangedListener
 import com.npv.ads.admob.natives.repositories.NativeAdRepository
 import com.npv.alibs.nativetemplates.TemplateView
@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var nativeAdRepository: NativeAdRepository
 
     @Inject
-    lateinit var interstitialRepository: InterstitialRepository
+    lateinit var interstitialAdManager: InterstitialAdManager
 
     private lateinit var bannerView: FrameLayout
     private lateinit var templateView: TemplateView
@@ -98,13 +98,13 @@ class MainActivity : AppCompatActivity() {
         )
 
         // Load interstitial ad
-        interstitialRepository.load("ca-app-pub-3940256099942544/1033173712")
+        interstitialAdManager.load("ca-app-pub-3940256099942544/1033173712")
 
         // Show interstitial ad
         btnShowInterstitial.setOnClickListener {
 
             // If preloadAdUnitId != null, load new interstitial ad
-            interstitialRepository.show(this, onDismiss = {
+            interstitialAdManager.show(this, onDismiss = {
 
             }, preloadAdUnitId = "ca-app-pub-3940256099942544/1033173712")
         }

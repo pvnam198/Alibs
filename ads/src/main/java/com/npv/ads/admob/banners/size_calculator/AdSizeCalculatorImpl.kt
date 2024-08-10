@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.DisplayMetrics
 import android.view.WindowManager
 import com.google.android.gms.ads.AdSize
-import com.npv.ads.admob.banners.models.BannerSize
+import com.npv.ads.models.banners.BannerSize
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton

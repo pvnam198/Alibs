@@ -1,11 +1,12 @@
 package com.npv.ads.admob.interstitial.di
 
 import android.content.Context
+import com.npv.ads.admob.interstitial.manager.InterstitialAdManager
+import com.npv.ads.admob.interstitial.manager.InterstitialAdManagerImpl
 import com.npv.ads.admob.interstitial.repositories.InterstitialRepository
 import com.npv.ads.admob.interstitial.repositories.InterstitialRepositoryImpl
 import com.npv.ads.admob.revenue_tracker.InterstitialRevenueTracker
-import com.npv.ads.load_condtions.ConditionLoader
-import com.npv.ads.load_condtions.ConditionLoaderAppModule
+import com.npv.ads.section_loader.createSectionLoader
 import com.npv.ads.sharedPref.AdsSharedPref
 import dagger.Module
 import dagger.Provides
@@ -22,15 +23,24 @@ class AppModule {
     @Singleton
     fun provideInterstitialRepository(
         @ApplicationContext context: Context,
-        @ConditionLoaderAppModule.InterstitialConditionLoader conditionLoader: ConditionLoader,
         revenueTracker: InterstitialRevenueTracker,
-        adsSharedPref: AdsSharedPref
     ): InterstitialRepository {
         return InterstitialRepositoryImpl(
             context = context,
-            conditionLoader = conditionLoader,
-            revenueTracker = revenueTracker,
-            adsSharedPref = adsSharedPref
+            sectionLoader = createSectionLoader(),
+            revenueTracker = revenueTracker
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideInterstitialManager(
+        adsSharedPref: AdsSharedPref,
+        interstitialRepository: InterstitialRepository,
+    ): InterstitialAdManager {
+        return InterstitialAdManagerImpl(
+            adsSharedPref = adsSharedPref,
+            interstitialRepository = interstitialRepository
         )
     }
 

@@ -1,28 +1,11 @@
 package com.npv.ads.admob.interstitial.repositories
 
-import android.app.Activity
-import com.npv.ads.admob.interstitial.models.InterstitialCondition
+import com.google.android.gms.ads.interstitial.InterstitialAd
 
 interface InterstitialRepository {
 
+    var interstitialAd: InterstitialAd?
+
     fun load(adUnitId: String)
-
-    fun setInterstitialCondition(interstitialCondition: InterstitialCondition)
-
-    fun show(
-        activity: Activity,
-        onDismiss: (() -> Unit)? = null,
-        preloadAdUnitId: String? = null
-    )
-
-    fun forceShow(
-        activity: Activity,
-        onDismiss: (() -> Unit)? = null,
-        preloadAdUnitId: String? = null
-    )
-
-    fun isAvailable(): Boolean
-
-    fun setInterShowGap(gap: Long)
 
 }

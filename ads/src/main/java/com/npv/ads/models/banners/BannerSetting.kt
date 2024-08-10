@@ -1,4 +1,4 @@
-package com.npv.ads.admob.banners.models
+package com.npv.ads.models.banners
 
 import com.google.gson.annotations.SerializedName
 

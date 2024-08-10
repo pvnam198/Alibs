@@ -1,10 +1,10 @@
-package com.npv.ads.admob.natives.models
+package com.npv.ads.models.native_ad
 
 import com.google.gson.annotations.SerializedName
 
-data class NativeAdSetting(
+data class NativeSetting(
     @SerializedName("preload_max")
     val preloadMax: Int,
     @SerializedName("native_display_settings")
-    val nativeDisplaySettings: List<NativeDisplaySetting>
+    val adDisplayConfigs: List<AdDisplayConfig>
 )

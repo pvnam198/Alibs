@@ -4,13 +4,13 @@ import android.view.View
 import android.view.ViewGroup
 import com.google.android.gms.ads.AdView
 import com.npv.ads.admob.banners.loader.AdMobBannerLoader
-import com.npv.ads.admob.banners.models.BannerCondition
-import com.npv.ads.admob.banners.models.BannerSize
-import com.npv.ads.admob.banners.models.CollapsibleType
+import com.npv.ads.models.banners.BannerSize
+import com.npv.ads.models.banners.CollapsibleType
 import com.npv.ads.admob.banners.provider.DefaultBannerSettingsProvider
 import com.npv.ads.admob.banners.repositories.BannerRepository
 import com.npv.ads.admob.banners.size_calculator.AdSizeCalculator
 import com.npv.ads.admob.revenue_tracker.AdViewRevenueTracker
+import com.npv.ads.models.MoreCondition
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -22,7 +22,7 @@ class AdmobBannerManagerImpl @Inject constructor(
     private val adSizeCalculator: AdSizeCalculator,
 ) : AdmobBannerManager {
 
-    private var bannerCondition: BannerCondition? = null
+    private var moreCondition: MoreCondition? = null
 
     override fun load(
         adUnitId: String,
@@ -30,7 +30,7 @@ class AdmobBannerManagerImpl @Inject constructor(
         type: CollapsibleType?,
         callback: ((AdView?) -> Unit)?
     ) {
-        if (bannerCondition?.shouldLoad() == false) {
+        if (moreCondition?.shouldLoad() == false) {
             callback?.invoke(null)
             return
         }
@@ -77,8 +77,8 @@ class AdmobBannerManagerImpl @Inject constructor(
             })
     }
 
-    override fun setBannerCondition(bannerCondition: BannerCondition) {
-        this.bannerCondition = bannerCondition
+    override fun setMoreCondition(condition: MoreCondition) {
+        moreCondition = condition
     }
 
     override fun setDefaultBannerSettingsProvider(defaultBannerSettingsProvider: DefaultBannerSettingsProvider) {

@@ -1,7 +1,7 @@
 package com.npv.ads.admob.natives.provider
 
-import com.npv.ads.admob.natives.models.NativeDisplaySetting
+import com.npv.ads.models.native_ad.AdDisplayConfig
 
 interface DefaultNativeSettingsProvider {
-    fun getDefaultNativeDisplaySettings(): List<NativeDisplaySetting>
+    fun getDefaultNativeDisplaySettings(): List<AdDisplayConfig>
 }

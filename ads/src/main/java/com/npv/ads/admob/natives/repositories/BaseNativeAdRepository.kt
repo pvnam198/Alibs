@@ -5,29 +5,29 @@ import com.google.android.gms.ads.nativead.NativeAd
 import com.google.gson.Gson
 import com.npv.ads.TAG
 import com.npv.ads.admob.natives.listeners.NativeAdChangedListener
-import com.npv.ads.admob.natives.models.NativeAdCondition
-import com.npv.ads.admob.natives.models.NativeAdSetting
-import com.npv.ads.admob.natives.models.NativeDisplaySetting
+import com.npv.ads.models.native_ad.NativeSetting
+import com.npv.ads.models.native_ad.AdDisplayConfig
 import com.npv.ads.admob.natives.provider.DefaultNativeSettingsProvider
-import com.npv.ads.load_condtions.ConditionLoader
+import com.npv.ads.section_loader.SectionLoader
 import com.npv.ads.admob.revenue_tracker.NativeAdRevenueTracker
+import com.npv.ads.models.MoreCondition
 import com.npv.ads.sharedPref.AdsSharedPref
 
 abstract class BaseNativeAdRepository(
     private val adsSharedPref: AdsSharedPref,
     private val revenueTracker: NativeAdRevenueTracker,
-    private val conditionLoader: ConditionLoader
+    private val sectionLoader: SectionLoader
 ) : NativeAdRepository {
 
     private var defaultNativeSettingsProvider: DefaultNativeSettingsProvider? = null
-    private var nativeDisplaySettings: List<NativeDisplaySetting>? = null
+    private var adDisplayConfigs: List<AdDisplayConfig>? = null
 
     private val natives = ArrayList<NativeAd>()
     private val nativeAdsCache = HashMap<String, NativeAd>()
 
     private val listeners: ArrayList<NativeAdChangedListener> = ArrayList()
 
-    private var nativeAdCondition: NativeAdCondition? = null
+    private var moreCondition: MoreCondition? = null
 
     private val lockLoading = Any()
 
@@ -35,7 +35,7 @@ abstract class BaseNativeAdRepository(
         val json = adsSharedPref.getNativeSettings()
         if (json.isEmpty()) return
         val nativeAdSetting = toNativeSetting(json) ?: return
-        nativeDisplaySettings = nativeAdSetting.nativeDisplaySettings
+        adDisplayConfigs = nativeAdSetting.adDisplayConfigs
     }
 
     override fun addListener(ls: NativeAdChangedListener) {
@@ -85,7 +85,7 @@ abstract class BaseNativeAdRepository(
     protected open fun onAdLoaded(nativeAds: List<NativeAd>) {
         trackAdRevenue(nativeAds)
         natives.addAll(nativeAds)
-        conditionLoader.onLoaded()
+        sectionLoader.onLoaded()
         notifyNativeAdLoadingCompleted()
     }
 
@@ -94,7 +94,7 @@ abstract class BaseNativeAdRepository(
     }
 
     protected open fun onAdFailedToLoad(msg: String? = null) {
-        conditionLoader.onFailed()
+        sectionLoader.onFailed()
         notifyNativeAdLoadingCompleted()
     }
 
@@ -108,24 +108,24 @@ abstract class BaseNativeAdRepository(
                 return
             }
 
-            if (nativeAdCondition?.shouldLoad() == false) {
+            if (moreCondition?.shouldLoad() == false) {
                 Log.d(TAG, "loadIfNeed: return by condition")
                 return
             }
 
-            if (!conditionLoader.shouldLoad()) {
+            if (!sectionLoader.shouldLoad()) {
                 Log.d(TAG, "loadIfNeed: return by conditionLoader")
                 return
             }
 
-            conditionLoader.onLoading()
+            sectionLoader.onLoading()
             load(id, maxPreload - currentSize)
         }
     }
 
-    override fun getNativeDisplaySetting(id: String): NativeDisplaySetting? {
-        if (nativeDisplaySettings == null) loadConfigs()
-        return nativeDisplaySettings?.find { it.id == id }
+    override fun getNativeDisplaySetting(id: String): AdDisplayConfig? {
+        if (adDisplayConfigs == null) loadConfigs()
+        return adDisplayConfigs?.find { it.id == id }
             ?: defaultNativeSettingsProvider?.getDefaultNativeDisplaySettings()
                 ?.find { it.id == id }
     }
@@ -134,23 +134,23 @@ abstract class BaseNativeAdRepository(
         val nativeAdSetting = toNativeSetting(data) ?: return
         adsSharedPref.setNativeSettings(data)
         adsSharedPref.setNativePreloadMax(nativeAdSetting.preloadMax)
-        nativeDisplaySettings = nativeAdSetting.nativeDisplaySettings
+        adDisplayConfigs = nativeAdSetting.adDisplayConfigs
     }
 
     override fun setDefaultNativeSettingsProvider(defaultNativeSettingsProvider: DefaultNativeSettingsProvider) {
         this.defaultNativeSettingsProvider = defaultNativeSettingsProvider
     }
 
-    private fun toNativeSetting(data: String): NativeAdSetting? {
+    private fun toNativeSetting(data: String): NativeSetting? {
         return try {
-            Gson().fromJson(data, NativeAdSetting::class.java)
+            Gson().fromJson(data, NativeSetting::class.java)
         } catch (e: Exception) {
             null
         }
     }
 
-    override fun setNativeAdCondition(nativeAdCondition: NativeAdCondition) {
-        this.nativeAdCondition = nativeAdCondition
+    override fun setMoreCondition(condition: MoreCondition) {
+        moreCondition = condition
     }
 
 }

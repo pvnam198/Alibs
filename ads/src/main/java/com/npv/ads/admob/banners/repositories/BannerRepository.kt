@@ -1,6 +1,6 @@
 package com.npv.ads.admob.banners.repositories
 
-import com.npv.ads.admob.banners.models.BannerSetting
+import com.npv.ads.models.banners.BannerSetting
 import com.npv.ads.admob.banners.provider.DefaultBannerSettingsProvider
 import kotlinx.coroutines.Job
 

@@ -1,7 +1,7 @@
 package com.npv.ads.admob.banners.repositories
 
 import com.google.gson.Gson
-import com.npv.ads.admob.banners.models.BannerSetting
+import com.npv.ads.models.banners.BannerSetting
 import com.npv.ads.admob.banners.provider.DefaultBannerSettingsProvider
 import com.npv.ads.sharedPref.AdsSharedPref
 import kotlinx.coroutines.CoroutineScope
