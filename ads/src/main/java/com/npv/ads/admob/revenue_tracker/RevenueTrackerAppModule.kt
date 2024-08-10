@@ -28,4 +28,10 @@ class RevenueTrackerAppModule {
         return InterstitialRevenueTrackerImpl()
     }
 
+    @Provides
+    @Singleton
+    fun provideAppOpenAdRevenueTracker(): AppOpenAdRevenueTracker {
+        return AppOpenAdRevenueTrackerImpl()
+    }
+
 }

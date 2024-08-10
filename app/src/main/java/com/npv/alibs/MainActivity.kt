@@ -6,17 +6,25 @@ import android.view.View
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.ads.nativead.NativeAd
+import com.npv.ads.TAG
 import com.npv.ads.admob.banners.manager.AdmobBannerManager
 import com.npv.ads.admob.interstitial.manager.InterstitialAdManager
 import com.npv.ads.models.banners.BannerSize
 import com.npv.ads.admob.natives.listeners.NativeAdChangedListener
 import com.npv.ads.admob.natives.repositories.NativeAdRepository
+import com.npv.ads.admob.open_ad.manager.AdOpenAdManager
 import com.npv.alibs.nativetemplates.TemplateView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+
+    companion object {
+
+        private const val APP_OPEN_AD_UNIT_ID = "ca-app-pub-3940256099942544/9257395921"
+
+    }
 
     @Inject
     lateinit var admobBannerManager: AdmobBannerManager
@@ -26,6 +34,9 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var interstitialAdManager: InterstitialAdManager
+
+    @Inject
+    lateinit var adOpenAdManager: AdOpenAdManager
 
     private lateinit var bannerView: FrameLayout
     private lateinit var templateView: TemplateView
@@ -41,6 +52,8 @@ class MainActivity : AppCompatActivity() {
         bannerView = findViewById(R.id.banner_view)
         btnLoadInterstitial = findViewById(R.id.btn_load_interstitial)
         btnShowInterstitial = findViewById(R.id.btn_show_interstitial)
+
+        adOpenAdManager.load(APP_OPEN_AD_UNIT_ID)
 
         // Get nativeAd
         val nativeAd: NativeAd? = nativeAdRepository.getNativeAd()
@@ -109,4 +122,12 @@ class MainActivity : AppCompatActivity() {
             }, preloadAdUnitId = "ca-app-pub-3940256099942544/1033173712")
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        adOpenAdManager.show(this, onDismiss = {
+            Log.d(TAG, "onDismissOpenAd")
+        }, preloadAdUnitId = null)
+    }
+
 }
