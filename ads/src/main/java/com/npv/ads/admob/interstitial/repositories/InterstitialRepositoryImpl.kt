@@ -29,6 +29,7 @@ class InterstitialRepositoryImpl @Inject constructor(
     private var interstitialAd: InterstitialAd? = null
     private var interstitialCondition: InterstitialCondition? = null
     private val lockShow = Any()
+    private val lockLoad = Any()
     private var isShowing = false
     private var lastDismissTime: Long = 0L
     private var _interShowGap: Long
@@ -38,29 +39,31 @@ class InterstitialRepositoryImpl @Inject constructor(
         }
 
     override fun load(adUnitId: String) {
-        Log.d("log_debugs", "InterstitialRepositoryImpl_load: ")
-        if (interstitialAd != null) return
-        if (interstitialCondition?.shouldLoad() == false) return
-        if (!conditionLoader.shouldLoad()) return
+        synchronized(lockLoad) {
+            Log.d("log_debugs", "InterstitialRepositoryImpl_load: ")
+            if (interstitialAd != null) return
+            if (interstitialCondition?.shouldLoad() == false) return
+            if (!conditionLoader.shouldLoad()) return
 
-        conditionLoader.onLoading()
-        InterstitialAd.load(
-            context, adUnitId,
-            AdRequest.Builder().build(),
-            object : InterstitialAdLoadCallback() {
-                override fun onAdFailedToLoad(p0: LoadAdError) {
-                    conditionLoader.onFailed()
-                    Log.d("log_debugs", "InterstitialRepositoryImpl_onAdFailedToLoad: ")
-                }
+            conditionLoader.onLoading()
+            InterstitialAd.load(context,
+                adUnitId,
+                AdRequest.Builder().build(),
+                object : InterstitialAdLoadCallback() {
+                    override fun onAdFailedToLoad(p0: LoadAdError) {
+                        conditionLoader.onFailed()
+                        Log.d("log_debugs", "InterstitialRepositoryImpl_onAdFailedToLoad: ")
+                    }
 
-                override fun onAdLoaded(ad: InterstitialAd) {
-                    super.onAdLoaded(ad)
-                    conditionLoader.onLoaded()
-                    interstitialAd = ad
-                    revenueTracker.trackAdRevenue(ad)
-                    Log.d("log_debugs", "InterstitialRepositoryImpl_onAdLoaded: ")
-                }
-            })
+                    override fun onAdLoaded(ad: InterstitialAd) {
+                        super.onAdLoaded(ad)
+                        conditionLoader.onLoaded()
+                        interstitialAd = ad
+                        revenueTracker.trackAdRevenue(ad)
+                        Log.d("log_debugs", "InterstitialRepositoryImpl_onAdLoaded: ")
+                    }
+                })
+        }
     }
 
     override fun setInterstitialCondition(interstitialCondition: InterstitialCondition) {
@@ -68,9 +71,7 @@ class InterstitialRepositoryImpl @Inject constructor(
     }
 
     override fun show(
-        activity: Activity,
-        onDismiss: (() -> Unit)?,
-        preloadAdUnitId: String?
+        activity: Activity, onDismiss: (() -> Unit)?, preloadAdUnitId: String?
     ) {
         Log.d("log_debugs", "InterstitialRepositoryImpl_show: ")
         synchronized(lockShow) {
@@ -89,13 +90,13 @@ class InterstitialRepositoryImpl @Inject constructor(
                 onDismiss?.invoke()
                 return
             }
+            this.interstitialAd = null
             isShowing = true
             interstitialAd.fullScreenContentCallback = object : FullScreenContentCallback() {
                 override fun onAdDismissedFullScreenContent() {
                     super.onAdDismissedFullScreenContent()
                     Log.d(
-                        "log_debugs",
-                        "InterstitialRepositoryImpl_onAdDismissedFullScreenContent: "
+                        "log_debugs", "InterstitialRepositoryImpl_onAdDismissedFullScreenContent: "
                     )
                     lastDismissTime = System.currentTimeMillis()
                     isShowing = false

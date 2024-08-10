@@ -106,7 +106,7 @@ class MainActivity : AppCompatActivity() {
             // If preloadAdUnitId != null, load new interstitial ad
             interstitialRepository.show(this, onDismiss = {
 
-            }, preloadAdUnitId = null)
+            }, preloadAdUnitId = "ca-app-pub-3940256099942544/1033173712")
         }
     }
 }
