@@ -13,6 +13,7 @@ import com.npv.ads.models.banners.BannerSize
 import com.npv.ads.admob.natives.listeners.NativeAdChangedListener
 import com.npv.ads.admob.natives.repositories.NativeAdRepository
 import com.npv.ads.admob.open_ad.manager.AdOpenAdManager
+import com.npv.ads.admob.reward_ad.managers.RewardAdManager
 import com.npv.alibs.nativetemplates.TemplateView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -23,6 +24,8 @@ class MainActivity : AppCompatActivity() {
     companion object {
 
         private const val APP_OPEN_AD_UNIT_ID = "ca-app-pub-3940256099942544/9257395921"
+
+        private const val REWARD_AD_UNIT_ID = "ca-app-pub-3940256099942544/5224354917"
 
     }
 
@@ -37,6 +40,9 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var adOpenAdManager: AdOpenAdManager
+
+    @Inject
+    lateinit var rewardAdManager: RewardAdManager
 
     private lateinit var bannerView: FrameLayout
     private lateinit var templateView: TemplateView
@@ -121,6 +127,15 @@ class MainActivity : AppCompatActivity() {
 
             }, preloadAdUnitId = "ca-app-pub-3940256099942544/1033173712")
         }
+
+        rewardAdManager.load(REWARD_AD_UNIT_ID, onSucceed = {
+            Log.d(TAG, "onSucceedRewardAd")
+            rewardAdManager.show(this, onDismiss = {
+                Log.d(TAG, "onDismissRewardAd reward: $it")
+            }, preloadAdUnitId = REWARD_AD_UNIT_ID)
+        }, onFailed = {
+            Log.d(TAG, "onFailedRewardAd: $it")
+        })
     }
 
     override fun onResume() {

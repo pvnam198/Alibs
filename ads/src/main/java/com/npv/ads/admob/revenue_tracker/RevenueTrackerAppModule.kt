@@ -34,4 +34,10 @@ class RevenueTrackerAppModule {
         return AppOpenAdRevenueTrackerImpl()
     }
 
+    @Provides
+    @Singleton
+    fun provideRewardRevenueTracker(): RewardRevenueTracker {
+        return RewardRevenueTrackerImpl()
+    }
+
 }
