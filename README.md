@@ -46,6 +46,14 @@ class App : Application() {
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
+    companion object {
+
+        private const val APP_OPEN_AD_UNIT_ID = "ca-app-pub-3940256099942544/9257395921"
+
+        private const val REWARD_AD_UNIT_ID = "ca-app-pub-3940256099942544/5224354917"
+
+    }
+
     @Inject
     lateinit var admobBannerManager: AdmobBannerManager
 
@@ -53,7 +61,13 @@ class MainActivity : AppCompatActivity() {
     lateinit var nativeAdRepository: NativeAdRepository
 
     @Inject
-    lateinit var interstitialRepository: InterstitialRepository
+    lateinit var interstitialAdManager: InterstitialAdManager
+
+    @Inject
+    lateinit var adOpenAdManager: AdOpenAdManager
+
+    @Inject
+    lateinit var rewardAdManager: RewardAdManager
 
     private lateinit var bannerView: FrameLayout
     private lateinit var templateView: TemplateView
@@ -69,6 +83,8 @@ class MainActivity : AppCompatActivity() {
         bannerView = findViewById(R.id.banner_view)
         btnLoadInterstitial = findViewById(R.id.btn_load_interstitial)
         btnShowInterstitial = findViewById(R.id.btn_show_interstitial)
+
+        adOpenAdManager.load(APP_OPEN_AD_UNIT_ID)
 
         // Get nativeAd
         val nativeAd: NativeAd? = nativeAdRepository.getNativeAd()
@@ -126,17 +142,34 @@ class MainActivity : AppCompatActivity() {
         )
 
         // Load interstitial ad
-        interstitialRepository.load("ca-app-pub-3940256099942544/1033173712")
+        interstitialAdManager.load("ca-app-pub-3940256099942544/1033173712")
 
         // Show interstitial ad
         btnShowInterstitial.setOnClickListener {
 
             // If preloadAdUnitId != null, load new interstitial ad
-            interstitialRepository.show(this, onDismiss = {
+            interstitialAdManager.show(this, onDismiss = {
 
-            }, preloadAdUnitId = null)
+            }, preloadAdUnitId = "ca-app-pub-3940256099942544/1033173712")
         }
+
+        rewardAdManager.load(REWARD_AD_UNIT_ID, onSucceed = {
+            Log.d(TAG, "onSucceedRewardAd")
+            rewardAdManager.show(this, onDismiss = {
+                Log.d(TAG, "onDismissRewardAd reward: $it")
+            }, preloadAdUnitId = REWARD_AD_UNIT_ID)
+        }, onFailed = {
+            Log.d(TAG, "onFailedRewardAd: $it")
+        })
     }
+
+    override fun onResume() {
+        super.onResume()
+        adOpenAdManager.show(this, onDismiss = {
+            Log.d(TAG, "onDismissOpenAd")
+        }, preloadAdUnitId = null)
+    }
+
 }
 ```
 
