@@ -35,7 +35,10 @@ class InterstitialAdManagerImpl @Inject constructor(
         synchronized(lockShow) {
             if (isShowing) return
 
-            if (System.currentTimeMillis() - lastDismissTime < _interShowGap) return
+            if (System.currentTimeMillis() - lastDismissTime < _interShowGap) {
+                onDismiss?.invoke()
+                return
+            }
 
             if (moreCondition?.shouldShow() == false) {
                 onDismiss?.invoke()
