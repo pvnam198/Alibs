@@ -49,9 +49,11 @@ class RewardAdManagerImpl @Inject constructor(
             if (isShowing) return
             val rewardAd = rewardAdRepository.rewardedAd
             if (rewardAd == null) {
-                loadNewAd(preloadAdUnitId ?: return)
+                onDismiss?.invoke(false)
+                preloadAdUnitId?.let { loadNewAd(preloadAdUnitId) }
                 return
             }
+            preloadAdUnitId?.let { loadNewAd(preloadAdUnitId) }
             isShowing = true
             var reward = false
             rewardAd.fullScreenContentCallback = object : FullScreenContentCallback() {

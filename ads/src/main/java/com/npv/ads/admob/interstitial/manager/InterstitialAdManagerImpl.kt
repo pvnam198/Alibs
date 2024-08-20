@@ -3,8 +3,8 @@ package com.npv.ads.admob.interstitial.manager
 import android.app.Activity
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.FullScreenContentCallback
-import com.npv.ads.models.MoreCondition
 import com.npv.ads.admob.interstitial.repositories.InterstitialRepository
+import com.npv.ads.models.MoreCondition
 import com.npv.ads.sharedPref.AdsSharedPref
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -67,13 +67,13 @@ class InterstitialAdManagerImpl @Inject constructor(
     ) {
         val interstitialAd = interstitialRepository.interstitialAd
         if (interstitialAd == null) {
-            interstitialRepository.load(preloadAdUnitId ?: return)
+            preloadAdUnitId?.let { loadNewInterstitial(preloadAdUnitId) }
             onDismiss?.invoke()
             return
         }
 
         isShowing = true
-        loadNewInterstitial(preloadAdUnitId ?: return)
+        preloadAdUnitId?.let { loadNewInterstitial(preloadAdUnitId) }
         interstitialAd.fullScreenContentCallback = object : FullScreenContentCallback() {
             override fun onAdDismissedFullScreenContent() {
                 super.onAdDismissedFullScreenContent()

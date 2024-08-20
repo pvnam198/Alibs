@@ -29,11 +29,11 @@ class AdOpenAdManagerImpl @Inject constructor(
             val adOpenAd = adOpenRepository.appOpenAd
             if (adOpenAd == null) {
                 onDismiss?.invoke()
-                adOpenRepository.load(preloadAdUnitId ?: return)
+                preloadAdUnitId?.let { loadNewAd(preloadAdUnitId) }
                 return
             }
+            preloadAdUnitId?.let { loadNewAd(preloadAdUnitId) }
             isShowing = true
-            loadNewAd(preloadAdUnitId ?: return)
             adOpenAd.fullScreenContentCallback =
                 object : FullScreenContentCallback() {
                     override fun onAdDismissedFullScreenContent() {
